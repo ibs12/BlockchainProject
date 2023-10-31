@@ -17,7 +17,7 @@ contract UniqueCards is ERC721Enumerable, Ownable {
 
     mapping(uint256 => Card) public cards; // Mapping from token ID to card details
 
-    constructor() ERC721("UniqueCards", "UC") {}
+    constructor() ERC721("UniqueCards", "UC") Ownable(msg.sender) {}
 
     function createUniqueCard(
         string memory name,
