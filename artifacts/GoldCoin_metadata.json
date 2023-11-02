@@ -539,7 +539,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"CSE426Project/ERC20SmartContract.sol": "GoldCoin"
+			"tests/CSE426Project/ERC20SmartContract.sol": "GoldCoin"
 		},
 		"evmVersion": "shanghai",
 		"libraries": {},
@@ -553,7 +553,7 @@
 		"remappings": []
 	},
 	"sources": {
-		"@openzeppelin/contracts@5.0.0/access/Ownable.sol": {
+		"@openzeppelin/contracts/access/Ownable.sol": {
 			"keccak256": "0xff6d0bb2e285473e5311d9d3caacb525ae3538a80758c10649a4d61029b017bb",
 			"license": "MIT",
 			"urls": [
@@ -561,7 +561,7 @@
 				"dweb:/ipfs/QmfEckWLmZkDDcoWrkEvMWhms66xwTLff9DDhegYpvHo1a"
 			]
 		},
-		"@openzeppelin/contracts@5.0.0/interfaces/draft-IERC6093.sol": {
+		"@openzeppelin/contracts/interfaces/draft-IERC6093.sol": {
 			"keccak256": "0x60c65f701957fdd6faea1acb0bb45825791d473693ed9ecb34726fdfaa849dd7",
 			"license": "MIT",
 			"urls": [
@@ -569,7 +569,7 @@
 				"dweb:/ipfs/QmcLLJppxKeJWqHxE2CUkcfhuRTgHSn8J4kijcLa5MYhSt"
 			]
 		},
-		"@openzeppelin/contracts@5.0.0/token/ERC20/ERC20.sol": {
+		"@openzeppelin/contracts/token/ERC20/ERC20.sol": {
 			"keccak256": "0xc3e1fa9d1987f8d349dfb4d6fe93bf2ca014b52ba335cfac30bfe71e357e6f80",
 			"license": "MIT",
 			"urls": [
@@ -577,7 +577,7 @@
 				"dweb:/ipfs/QmTdwkbQq7owpCiyuzE7eh5LrD2ddrBCZ5WHVsWPi1RrTS"
 			]
 		},
-		"@openzeppelin/contracts@5.0.0/token/ERC20/IERC20.sol": {
+		"@openzeppelin/contracts/token/ERC20/IERC20.sol": {
 			"keccak256": "0xc6a8ff0ea489379b61faa647490411b80102578440ab9d84e9a957cc12164e70",
 			"license": "MIT",
 			"urls": [
@@ -585,7 +585,7 @@
 				"dweb:/ipfs/Qmau6x4Ns9XdyynRCNNp3RhLqijJjFm7z5fyZazfYFGYdq"
 			]
 		},
-		"@openzeppelin/contracts@5.0.0/token/ERC20/extensions/IERC20Metadata.sol": {
+		"@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": {
 			"keccak256": "0xaa761817f6cd7892fcf158b3c776b34551cde36f48ff9703d53898bc45a94ea2",
 			"license": "MIT",
 			"urls": [
@@ -593,7 +593,7 @@
 				"dweb:/ipfs/QmcrhfPgVNf5mkdhQvy1pMv51TFokD3Y4Wa5WZhFqVh8UV"
 			]
 		},
-		"@openzeppelin/contracts@5.0.0/utils/Context.sol": {
+		"@openzeppelin/contracts/utils/Context.sol": {
 			"keccak256": "0x75a4ee64c68dbd5f38bddd06e664a64c8271b4caa554fb6f0607dfd672bb4bf3",
 			"license": "MIT",
 			"urls": [
@@ -601,12 +601,12 @@
 				"dweb:/ipfs/QmNgFkoXNWoUbAyw71rr1sKQ95Rj2GfvYiWg79xEYDn2NY"
 			]
 		},
-		"CSE426Project/ERC20SmartContract.sol": {
-			"keccak256": "0x02907ac6223675041e75ce510123b12cbbe4d44d3591171c26da97a92780fedc",
+		"tests/CSE426Project/ERC20SmartContract.sol": {
+			"keccak256": "0xaf711ad45ac5c66175d84347963a735415f28c0220ae4c68df20d88eb0aa1e76",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://a53379ba51750e7949aa25adc063667ba656c8dbe51b338a6134084bf5af691d",
-				"dweb:/ipfs/QmYKCkjUgw1SgeCNHgNLih1M34otyQztyKVQkzNddy7JH6"
+				"bzz-raw://7f3cce31a4a74473474b7f61251d150b70097ed53ee4f6abe3e396fa50d0d46f",
+				"dweb:/ipfs/QmNY1voAUsrUN1XhpXCEi5NJZoTKx4akCgPNrnCwWLXKYp"
 			]
 		}
 	},

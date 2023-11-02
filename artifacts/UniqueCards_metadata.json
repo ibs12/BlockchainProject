@@ -844,7 +844,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"CSE426Project/ERC721SmartContract.sol": "UniqueCards"
+			"tests/CSE426Project/ERC721SmartContract.sol": "UniqueCards"
 		},
 		"evmVersion": "shanghai",
 		"libraries": {},
@@ -978,7 +978,7 @@
 				"dweb:/ipfs/QmVBEei6aTnvYNZp2CHYVNKyZS4q1KkjANfY39WVXZXVoT"
 			]
 		},
-		"CSE426Project/ERC721SmartContract.sol": {
+		"tests/CSE426Project/ERC721SmartContract.sol": {
 			"keccak256": "0x5b57b759006d4f3b3e6d8085caecb490179a15410ad4617e4d1f770e679c020d",
 			"license": "MIT",
 			"urls": [
