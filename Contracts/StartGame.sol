@@ -10,6 +10,21 @@ contract PlayerRegistration {
     UniqueCards private cardsContract;
     GameItems private itemsContract;
 
+    // Define a structure to represent a game
+    struct Game {
+        address player1;
+        address player2;
+        uint256 betAmount;
+        bool isActive;
+    }
+
+    // Mapping to store ongoing games
+    mapping(uint256 => Game) public games;
+    uint256 public nextGameId;
+
+    // Mapping to store player bets
+    mapping(address => uint256) public playerBets;
+
     constructor(
         address _goldCoinAddress,
         address _cardsAddress,
@@ -59,6 +74,70 @@ contract PlayerRegistration {
             uint256 powerUpItemId = 1; // Assuming 1 is the ID for the power-up
             itemsContract.mintItem(playerAddress, powerUpItemId, 1); // Mint one power-up
             itemsContract.usePowerUp(playerAddress); // Indicate the power-up is used
+        }
+    }
+
+    function startGame(address player1, address player2) external {
+        uint256 betAmount = 100 * 10 ** 18; // 100 GoldCoins
+
+        // Ensure both players have sufficient balance and have consented
+        require(
+            goldCoinContract.balanceOf(player1) >= betAmount,
+            "Player 1 has insufficient balance"
+        );
+        require(
+            goldCoinContract.balanceOf(player2) >= betAmount,
+            "Player 2 has insufficient balance"
+        );
+
+        // Transfer coins to the contract as a bet
+        goldCoinContract.transferFrom(player1, address(this), betAmount);
+        goldCoinContract.transferFrom(player2, address(this), betAmount);
+
+        // Record the bet for each player
+        playerBets[player1] += betAmount;
+        playerBets[player2] += betAmount;
+
+        // Create a new game instance
+        games[nextGameId] = Game({
+            player1: player1,
+            player2: player2,
+            betAmount: betAmount,
+            isActive: true
+        });
+
+        nextGameId++; // Increment the game ID for the next game
+    }
+
+    function attack(
+        uint256 gameId,
+        uint256 attackerCardId,
+        uint256 defenderCardId
+    ) external {
+        Game storage game = games[gameId];
+        require(game.isActive, "Game is not active");
+
+        // Check if the player owns the attacking card
+        require(
+            cardsContract.ownerOf(attackerCardId) == msg.sender,
+            "Not the owner of the attacking card"
+        );
+
+        // Fetch card details
+        (uint256 attackerAttack, ) = cardsContract.getCardAttributes(
+            attackerCardId
+        );
+        (, uint256 defenderDefense) = cardsContract.getCardAttributes(
+            defenderCardId
+        );
+
+        // Apply attack logic
+        if (defenderDefense > attackerAttack) {
+            uint256 newDefense = defenderDefense - attackerAttack;
+            cardsContract.updateCardDefense(defenderCardId, newDefense);
+        } else {
+            // Card is defeated, burn the defender's card
+            cardsContract.burnCard(defenderCardId);
         }
     }
 }

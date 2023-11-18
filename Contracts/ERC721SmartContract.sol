@@ -6,6 +6,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract UniqueCards is ERC721Enumerable, Ownable {
+    address private StartGameContract;
+
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -81,5 +83,23 @@ contract UniqueCards is ERC721Enumerable, Ownable {
         cards[cardId].defense =
             (cards[cardId].defense * (100 + percentIncrease)) /
             100;
+    }
+
+    function getCardAttributes(
+        uint256 cardId
+    ) external view returns (uint256 attack, uint256 defense) {
+        Card storage card = cards[cardId];
+        return (card.attack, card.defense);
+    }
+
+    function updateCardDefense(uint256 cardId, uint256 newDefense) external {
+        require(msg.sender == address(StartGameContract), "Unauthorized"); // Only allow PlayerRegistration contract to call this
+        cards[cardId].defense = newDefense;
+    }
+
+    function burnCard(uint256 cardId) external {
+        require(msg.sender == address(StartGameContract), "Unauthorized");
+        require(ownerOf(cardId) != address(0), "Card does not exist");
+        _burn(cardId);
     }
 }
