@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
@@ -18,7 +18,7 @@ contract UniqueCards is ERC721Enumerable, Ownable {
 
     mapping(uint256 => Card) public cards; // Mapping from token ID to card details
 
-    constructor() ERC721("UniqueCards", "UC") Ownable(msg.sender) {}
+    constructor() ERC721("UniqueCards", "UC") Ownable() {}
 
     function createUniqueCard(
         string memory name,

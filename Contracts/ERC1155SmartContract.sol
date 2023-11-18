@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./ERC20SmartContract.sol";  // Importing the local ERC20 contract.
-import "./ERC721SmartContract.sol";        // Importing the local ERC721 contract.
+import "./ERC20SmartContract.sol"; // Importing the local ERC20 contract.
+import "./ERC721SmartContract.sol"; // Importing the local ERC721 contract.
 
 contract GameItems is ERC1155, Ownable {
     using Counters for Counters.Counter;
@@ -32,10 +32,13 @@ contract GameItems is ERC1155, Ownable {
 
     mapping(uint256 => Item) public items;
 
-    constructor(address _erc20Address, address _erc721Address) ERC1155("") Ownable(msg.sender) {
+    constructor(
+        address _erc20Address,
+        address _erc721Address
+    ) ERC1155("") Ownable() {
         erc20Token = GoldCoin(_erc20Address);
         erc721Token = UniqueCards(_erc721Address);
-    } 
+    }
 
     function createItem(
         ItemType itemType,
@@ -80,7 +83,7 @@ contract GameItems is ERC1155, Ownable {
         uint256 price;
 
         if (items[itemId].itemType == ItemType.PowerUp) {
-            price =  10 * 1e18; 
+            price = 10 * 1e18;
         } else if (items[itemId].itemType == ItemType.Mod) {
             price = 20 * 1e18;
         } else if (items[itemId].itemType == ItemType.UniqueAttribute) {
@@ -94,14 +97,62 @@ contract GameItems is ERC1155, Ownable {
     }
 
     function purchaseWithGoldCoin(uint256 itemId, uint256 amount) external {
-        uint256 price = 30;  
+        uint256 price = 30;
         erc20Token.transferFrom(msg.sender, address(this), price);
         _mint(msg.sender, itemId, amount, "");
     }
 
     function tradeUniqueCardForItem(uint256 cardId, uint256 itemId) external {
-        require(erc721Token.ownerOf(cardId) == msg.sender, "Not the owner of the unique card.");
-        erc721Token.tradeCard(cardId, address(this));  
-        _mint(msg.sender, itemId, 1, ""); 
+        require(
+            erc721Token.ownerOf(cardId) == msg.sender,
+            "Not the owner of the unique card."
+        );
+        erc721Token.tradeCard(cardId, address(this));
+        _mint(msg.sender, itemId, 1, "");
+    }
+
+    function getAllBalances(
+        address account
+    )
+        external
+        view
+        returns (uint256[] memory itemIds, uint256[] memory balances)
+    {
+        uint256 itemCount = _itemIds.current(); // Assuming _itemIds is your counter for items
+        itemIds = new uint256[](itemCount);
+        balances = new uint256[](itemCount);
+
+        for (uint256 i = 0; i < itemCount; i++) {
+            itemIds[i] = i + 1; // Assuming item IDs start at 1
+            balances[i] = balanceOf(account, i + 1);
+        }
+
+        return (itemIds, balances);
+    }
+
+    function batchTransfer(
+        address[] memory recipients,
+        uint256[] memory itemIds,
+        uint256[] memory amounts
+    ) external {
+        require(
+            recipients.length == itemIds.length &&
+                itemIds.length == amounts.length,
+            "Arrays must have the same length"
+        );
+
+        for (uint256 i = 0; i < recipients.length; i++) {
+            uint256 itemId = itemIds[i];
+            uint256 amount = amounts[i];
+            address recipient = recipients[i];
+
+            require(items[itemId].id == itemId, "Item does not exist.");
+            require(
+                balanceOf(msg.sender, itemId) >= amount,
+                "Insufficient item balance for transfer"
+            );
+
+            _safeTransferFrom(msg.sender, recipient, itemId, amount, "");
+        }
     }
 }
