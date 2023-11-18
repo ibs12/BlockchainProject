@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
@@ -31,6 +30,7 @@ contract GameItems is ERC1155, Ownable {
     }
 
     mapping(uint256 => Item) public items;
+    mapping(address => uint256) private playerPowerUps;
 
     constructor(
         address _erc20Address,
@@ -83,7 +83,8 @@ contract GameItems is ERC1155, Ownable {
         uint256 price;
 
         if (items[itemId].itemType == ItemType.PowerUp) {
-            price = 10 * 1e18;
+            price = 10 * 1e18; // Setting the price for power-ups
+            playerPowerUps[msg.sender] += amount; // Tracking power-up purchases
         } else if (items[itemId].itemType == ItemType.Mod) {
             price = 20 * 1e18;
         } else if (items[itemId].itemType == ItemType.UniqueAttribute) {
@@ -91,13 +92,12 @@ contract GameItems is ERC1155, Ownable {
         }
 
         require(msg.value >= price * amount, "Insufficient ETH sent.");
-
         _mint(msg.sender, itemId, amount, "");
         payable(owner()).transfer(msg.value);
     }
 
     function purchaseWithGoldCoin(uint256 itemId, uint256 amount) external {
-        uint256 price = 30;
+        uint256 price = 30; // Assuming a fixed price for all items when purchased with GoldCoin
         erc20Token.transferFrom(msg.sender, address(this), price);
         _mint(msg.sender, itemId, amount, "");
     }
@@ -111,48 +111,20 @@ contract GameItems is ERC1155, Ownable {
         _mint(msg.sender, itemId, 1, "");
     }
 
-    function getAllBalances(
-        address account
-    )
-        external
-        view
-        returns (uint256[] memory itemIds, uint256[] memory balances)
-    {
-        uint256 itemCount = _itemIds.current(); // Assuming _itemIds is your counter for items
-        itemIds = new uint256[](itemCount);
-        balances = new uint256[](itemCount);
+    // Modified function for players to use a power-up
+    function usePowerUp(address player) external {
+        require(playerPowerUps[player] > 0, "No power-ups available");
+        playerPowerUps[player] -= 1; // Decrement the power-up count
 
-        for (uint256 i = 0; i < itemCount; i++) {
-            itemIds[i] = i + 1; // Assuming item IDs start at 1
-            balances[i] = balanceOf(account, i + 1);
+        // Increase attributes for each card the player owns
+        uint256 cardCount = erc721Token.balanceOf(player);
+        for (uint256 i = 0; i < cardCount; i++) {
+            uint256 cardId = erc721Token.tokenOfOwnerByIndex(player, i);
+            erc721Token.increaseCardAttributes(cardId, 10); // 10% increase
         }
-
-        return (itemIds, balances);
     }
 
-    function batchTransfer(
-        address[] memory recipients,
-        uint256[] memory itemIds,
-        uint256[] memory amounts
-    ) external {
-        require(
-            recipients.length == itemIds.length &&
-                itemIds.length == amounts.length,
-            "Arrays must have the same length"
-        );
-
-        for (uint256 i = 0; i < recipients.length; i++) {
-            uint256 itemId = itemIds[i];
-            uint256 amount = amounts[i];
-            address recipient = recipients[i];
-
-            require(items[itemId].id == itemId, "Item does not exist.");
-            require(
-                balanceOf(msg.sender, itemId) >= amount,
-                "Insufficient item balance for transfer"
-            );
-
-            _safeTransferFrom(msg.sender, recipient, itemId, amount, "");
-        }
+    function hasPowerUp(address player) external view returns (bool) {
+        return playerPowerUps[player] > 0;
     }
 }

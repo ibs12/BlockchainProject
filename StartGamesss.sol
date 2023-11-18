@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.19;
 
-import "./ERC20.sol";
+import "/Users/ibrahimallahbuksh/BlockchainProject/Contracts/ERC20SmartContract.sol";
 
 // contract StartGame {
 contract StartGame is ERC20 {
     ERC20 goldCoin;
     address admin;
-    struct Player {                     
+    struct Player {
         uint playerId;
         bool registered;
     }
@@ -20,7 +20,7 @@ contract StartGame is ERC20 {
     mapping(address => Player) players;
 
     // constructor() {
-    constructor() ERC20("GoldCoin","GC") {
+    constructor() ERC20("GoldCoin", "GC") {
         admin = msg.sender;
         // ERC20(msg.sender);
     }

@@ -2,39 +2,44 @@
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract UniqueCards is ERC721Enumerable, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
     struct Card {
-        uint256 id; // Unique identifier
-        string name; // Card name
-        string description; // Short description of the card
-        // Add other attributes as needed
+        uint256 id;
+        string name;
+        string description;
+        uint256 attack;
+        uint256 defense;
     }
 
-    mapping(uint256 => Card) public cards; // Mapping from token ID to card details
+    mapping(uint256 => Card) public cards;
 
-    constructor() ERC721("UniqueCards", "UC") Ownable() {}
+    constructor() ERC721("UniqueCards", "UC") {}
 
     function createUniqueCard(
         string memory name,
-        string memory description
-    ) external onlyOwner {
+        string memory description,
+        uint256 attack,
+        uint256 defense
+    ) external onlyOwner returns (uint256) {
         _tokenIds.increment();
         uint256 newCardId = _tokenIds.current();
 
-        Card memory newCard = Card({
+        cards[newCardId] = Card({
             id: newCardId,
             name: name,
-            description: description
+            description: description,
+            attack: attack,
+            defense: defense
         });
 
-        cards[newCardId] = newCard;
-        _mint(owner(), newCardId); // The card is initially owned by the contract owner/admin
+        _mint(msg.sender, newCardId);
+        return newCardId;
     }
 
     function purchaseUniqueCard(uint256 cardId) external payable {
@@ -63,5 +68,18 @@ contract UniqueCards is ERC721Enumerable, Ownable {
 
         // Safely transfer the card to the recipient
         _safeTransfer(msg.sender, recipient, cardId, "");
+    }
+
+    function increaseCardAttributes(
+        uint256 cardId,
+        uint256 percentIncrease
+    ) external onlyOwner {
+        require(cards[cardId].id == cardId, "Card does not exist.");
+        cards[cardId].attack =
+            (cards[cardId].attack * (100 + percentIncrease)) /
+            100;
+        cards[cardId].defense =
+            (cards[cardId].defense * (100 + percentIncrease)) /
+            100;
     }
 }
