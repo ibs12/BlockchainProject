@@ -10,10 +10,13 @@
         </p>
       </v-card>
       <v-card elevation="3" class="py-5 " color="">
-        <v-card-title class="text-h5 font-weight-bold">User Functions</v-card-title>
-        <v-btn color="primary" class="ml-8" @click="registerUser" :disabled="currentPhase > 1">
-          Register for the game
+        <v-card-title class="text-h5 font-weight-bold">User Registration</v-card-title>
+        <v-btn color="primary" class="ml-8" @click="registerUser" v-show="currentPhase == 0" :disabled="playerRegistered">
+          Register for the game {{ playerRegistered }}
         </v-btn>
+        <p class="py-6 px-8" v-if="playerRegistered">
+          <span class="font-weight-bold">You have already registered for the game!</span>
+        </p>
       </v-card>
     </v-container>
   </div>
@@ -45,8 +48,13 @@ export default {
     ...mapActions('contractMethods', ['updateCurrentPhase', 'updatePlayerRegistered']),
     async registerUser() {
       // console.log(this.playerAccount)
-      console.log(await this.writePlayerRegistrationContract.registerPlayer(this.playerAccount))
-      console.log(await this.readOnlyPlayerRegistrationContract.players(this.playerAccount))
+      try {
+        await this.writePlayerRegistrationContract.registerPlayer(this.playerAccount);
+        this.updatePlayerRegistered(true)
+        console.log(await this.readOnlyPlayerRegistrationContract.getAllPlayers())
+      } catch (e) {
+        console.error(e)
+      }
     }
   },
 }

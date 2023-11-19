@@ -9,11 +9,21 @@
         </v-btn>
       </v-btn-toggle>
       <v-spacer></v-spacer>
-      <v-btn v-if="!playerAccount" color="error" @click="connectWallet">
-        Connect Wallet
-      </v-btn>
+      <div v-if="currentRouteName == 'user'">
+        <v-btn v-if="!playerAccount" color="error" @click="connectWallet">
+          Connect Wallet
+        </v-btn>
+        <div v-else>
+          <h4>Current Player Account: </h4> {{ playerAccount }}
+        </div>
+      </div>
       <div v-else>
-        <h4>Current Player Account: </h4> {{ playerAccount }}
+        <!-- <v-btn v-if="!playerAccount" color="error" @click="connectWallet">
+          Connect Wallet
+        </v-btn> -->
+        <!-- <div v-else> -->
+          <h4>Admin Player Account: </h4> {{ adminAccount }}
+        <!-- </div> -->
       </div>
     </v-app-bar>
 
@@ -37,7 +47,10 @@ export default {
   data: () => ({}),
   computed: {
     ...mapState('contract', ['adminAccount', 'playerAccount', 'goldCoinContractAddress', 'gameItemsContractAddress', 'uniqueCardsContractAddress', 'playerRegistrationContractAddress', 'readOnlyGoldCoinContract', 'readOnlyGameItemsContract', 'readOnlyUniqueCardsContract', 'readOnlyPlayerRegistrationContract', 'writeGoldCoinContract', 'writeGameItemsContract', 'writeUniqueCardsContract', 'writePlayerRegistrationContract']),
-    ...mapState('contractMethods', ['currentPhase'])
+    ...mapState('contractMethods', ['currentPhase']),
+    currentRouteName() {
+      return this.$route.name;
+    }
   },
   async mounted() {
     console.log(this.$ethers)

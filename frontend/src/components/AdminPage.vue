@@ -10,7 +10,7 @@
         </p>
       </v-card>
       <v-card elevation="3" class="py-5 " color="">
-        <v-card-title class="text-h5 font-weight-bold">Admin Functions</v-card-title>
+        <v-card-title class="text-h5 font-weight-bold">Phase Controls</v-card-title>
         <v-btn color="primary" class="ml-8" @click="nextGamePhase" :disabled="currentPhase > 1">
           Next Phase
         </v-btn>
