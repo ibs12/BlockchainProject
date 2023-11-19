@@ -21,6 +21,16 @@ contract GameItems is ERC1155, Ownable {
         Done
     }
     Phase public currPhase = Phase.Register;
+    //modifiers
+    modifier validPhase(Phase reqPhase) {
+        require(currPhase == reqPhase);
+        _;
+    }
+
+    function changePhase(Phase x) public onlyOwner {
+        // require(x > currPhase);
+        currPhase = x;
+    }
 
     enum ItemType {
         PowerUp,

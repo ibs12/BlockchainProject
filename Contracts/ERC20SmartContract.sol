@@ -36,18 +36,18 @@ contract GoldCoin is ERC20, Ownable {
         emit Mint(to, amount);
     }
 
-    // Function to allow users to buy GoldCoins with Ether
     function buyGoldCoins() public payable {
-        uint256 amountTobuy = msg.value * rate;
+        uint256 weiAmount = msg.value;
+        uint256 tokensToBuy = (weiAmount * rate) / (10 ** 18); // Adjust for token decimals
         uint256 dexBalance = balanceOf(address(this));
-        require(amountTobuy > 0, "You need to send some Ether");
+        require(tokensToBuy > 0, "You need to send some Ether");
         require(
-            amountTobuy <= dexBalance,
+            tokensToBuy <= dexBalance,
             "Not enough GoldCoins in the reserve"
         );
-        _transfer(address(this), msg.sender, amountTobuy);
+        _transfer(address(this), msg.sender, tokensToBuy);
 
-        emit GoldCoinPurchase(msg.sender, msg.value, amountTobuy);
+        emit GoldCoinPurchase(msg.sender, weiAmount, tokensToBuy);
     }
 
     // Function to set the exchange rate, only callable by the owner
