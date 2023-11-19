@@ -72,13 +72,9 @@ contract PlayerRegistration {
 
     address[] public allPlayers;
 
-    function registerPlayer() public {
-        Player storage player = players[msg.sender];
-        player.playerAddress = msg.sender;
-
-        if (players[msg.sender].playerAddress == address(0)) {
-            allPlayers.push(msg.sender);
-        }
+    function registerPlayer(address currPlayer) public {
+        Player storage player = players[currPlayer];
+        player.playerAddress = currPlayer;
 
         // Assign 5 unique cards to the player
         for (uint256 i = 0; i < 5; i++) {
@@ -90,10 +86,10 @@ contract PlayerRegistration {
                 attack,
                 defense
             );
-            cardsContract.transferFrom(address(this), msg.sender, newCardId);
+            cardsContract.transferFrom(address(this), currPlayer, newCardId);
             player.cardIds.push(newCardId); // Add new card ID to the player's card list
         }
-        emit PlayerRegistered(msg.sender);
+        emit PlayerRegistered(currPlayer);
     }
 
     // Function to get a player's card IDs

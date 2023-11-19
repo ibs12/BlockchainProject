@@ -1,46 +1,33 @@
 <template>
-  <div>
-    <v-app-bar color="red lighten-5" class=" text-h5 font-weight-bold" elevation="1">
-      User Page
-    </v-app-bar>
-    <v-container>
-      <v-card elevation="4" class="" color="">
-        <p class="ma-4 pa-6 text-center text-h3">
-          <span class="font-weight-bold">Current Phase:</span> <span> {{ currentPhaseMapped[currentPhase] }}</span>
-        </p>
-      </v-card>
-      <v-card elevation="3" class="py-5 " color="">
-        <v-card-title class="text-h5 font-weight-bold">Admin Functions</v-card-title>
-        <v-btn color="primary" class="ml-8" @click="nextGamePhase" :disabled="currentPhase > 1">
-          Next Phase
-        </v-btn>
-      </v-card>
-    </v-container>
-  </div>
+  <v-sheet color="grey lighten-5" max-width="280" rounded class="pt-3 pb-3" elevation="1">
+    <!-- <v-img :height="300" :width="250" :aspect-ratio="4 / 5"
+      :src="image != '' ? `${publicPath}images/people/${image}` : `${publicPath}images/people/placeholder.jpeg`"
+      class="mx-4 mt-4 mb-1 grey lighten-2">
+    </v-img> -->
+    <v-alert class="mx-4 text-center" color="purple" width="250" outlined>
+      <v-btn text v-if="link != ''" :href="link ? link : null" target="_blank" class="indigo--text text-overline">
+        {{ name }}
+      </v-btn>
+      <div text v-else class="black--text text-overline">
+        {{ name }}
+      </div>
+      <div class="black--text text-caption">
+        {{ title }}
+      </div>
+      <div class="black--text text-caption">
+        {{ department }}
+      </div>
+    </v-alert>
+  </v-sheet>
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from 'vuex';
-
 export default {
-  name: 'UserPage',
+  name: 'Card',
 
   data: () => ({
-    currentPhaseMapped: {
-      0: 'Register',
-      1: 'Play',
-      2: 'Game Over',
-    }
+    publicPath: process.env.BASE_URL
   }),
-  computed: {
-    ...mapState('contract', ['currentAccount', 'goldCoinContractAddress', 'gameItemsContractAddress', 'uniqueCardsContractAddress', 'readOnlyGoldCoinContract', 'readOnlyGameItemsContract', 'readOnlyUniqueCardsContract', 'writeGoldCoinContract', 'writeGameItemsContract', 'writeUniqueCardsContract']),
-    ...mapState('contractMethods', ['currentPhase']),
-    ...mapGetters('contractMethods', ['getCurrentPhase']),
-  },
-  mounted() {
-    console.log('user')
-  },
-  methods: {
-  },
+  props: ['image', 'link', 'name', 'title', 'department']
 }
 </script>

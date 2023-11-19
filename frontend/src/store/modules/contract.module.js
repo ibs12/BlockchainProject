@@ -1,19 +1,26 @@
 const state = {
-  currentAccount: "0x8AfA8198273Ca1113961514F4195DD6Ab740a3B1",
-  goldCoinContractAddress: "0x2262AEf5f227d9810DBdE592e2698dd930fF13f1",
-  gameItemsContractAddress: "0x5686786C964f564cd50395abFB5E0153F2078600",
-  uniqueCardsContractAddress: "0xB87445f09ffD4D244b9381F2E872F3bFdB0f5d36",
+  adminAccount: "0x8AfA8198273Ca1113961514F4195DD6Ab740a3B1",
+  playerAccount: "0x8AfA8198273Ca1113961514F4195DD6Ab740a3B1",
+  goldCoinContractAddress: "0xB7e4DE64D6BBA029c4ecB8c161952c83f6b81d66",
+  uniqueCardsContractAddress: "0x694b10F621F45aA84f3a42D6F296c0550bdCc9C7",
+  gameItemsContractAddress: "0x57B24015905388AaEF11c9e86a0EA9c576F2F4a7",
+  playerRegistrationContractAddress: "0xcddd6447D8C161a077c027b78176fA8BE67faC4e",
   readOnlyGoldCoinContract: null,
   readOnlyGameItemsContract: null,
   readOnlyUniqueCardsContract: null,
+  readOnlyPlayerRegistrationContract: null,
   writeGoldCoinContract: null,
   writeGameItemsContract: null,
   writeUniqueCardsContract: null,
+  writePlayerRegistrationContract: null,
 };
 
 const mutations = {
-  SET_CURRENT_ACCOUNT(state, value) {
-    state.currentAccount = value;
+  SET_ADMIN_ACCOUNT(state, value) {
+    state.adminAccount = value;
+  },
+  SET_PLAYER_ACCOUNT(state, value) {
+    state.playerAccount = value;
   },
   SET_GOLD_COIN_CONTRACT_ADDRESS(state, value) {
     state.goldCoinContractAddress = value;
@@ -24,6 +31,9 @@ const mutations = {
   SET_UNIQUE_CARDS_CONTRACT_ADDRESS(state, value) {
     state.uniqueCardsContractAddress = value;
   },
+  SET_PLAYER_REGISTRATION_CONTRACT_ADDRESS(state, value) {
+    state.playerRegistrationContractAddress = value;
+  },
   SET_READ_ONLY_GOLD_COIN_CONTRACT(state, value) {
     state.readOnlyGoldCoinContract = value;
   },
@@ -32,6 +42,9 @@ const mutations = {
   },
   SET_READ_ONLY_UNIQUE_CARDS_CONTRACT(state, value) {
     state.readOnlyUniqueCardsContract = value;
+  },
+  SET_READ_ONLY_PLAYER_REGISTRATION_CONTRACT(state, value) {
+    state.readOnlyPlayerRegistrationContract = value;
   },
   SET_WRITE_GOLD_COIN_CONTRACT(state, value) {
     state.writeGoldCoinContract = value;
@@ -42,11 +55,17 @@ const mutations = {
   SET_WRITE_UNIQUE_CARDS_CONTRACT(state, value) {
     state.writeUniqueCardsContract = value;
   },
+  SET_WRITE_PLAYER_REGISTRATION_CONTRACT(state, value) {
+    state.writePlayerRegistrationContract = value;
+  },
 };
 
 const actions = {
-  updateCurrentAccount({ commit }, payload) {
-    commit("SET_CURRENT_ACCOUNT", payload);
+  updateAdminAccount({ commit }, payload) {
+    commit("SET_ADMIN_ACCOUNT", payload);
+  },
+  updatePlayerAccount({ commit }, payload) {
+    commit("SET_PLAYER_ACCOUNT", payload);
   },
   updateGoldCoinContractAddress({ commit }, payload) {
     commit("SET_GOLD_COIN_CONTRACT_ADDRESS", payload);
@@ -57,6 +76,9 @@ const actions = {
   updateUniqueCardsContractAddress({ commit }, payload) {
     commit("SET_UNIQUE_CARDS_CONTRACT_ADDRESS", payload);
   },
+  updatePlayerRegistrationContractAddress({ commit }, payload) {
+    commit("SET_PLAYER_REGISTRATION_CONTRACT_ADDRESS", payload);
+  },
   updateReadOnlyGoldCoinContract({ commit }, payload) {
     commit("SET_READ_ONLY_GOLD_COIN_CONTRACT", payload);
   },
@@ -66,6 +88,9 @@ const actions = {
   updateReadOnlyUniqueCardsContract({ commit }, payload) {
     commit("SET_READ_ONLY_UNIQUE_CARDS_CONTRACT", payload);
   },
+  updateReadOnlyPlayerRegistrationContract({ commit }, payload) {
+    commit("SET_READ_ONLY_PLAYER_REGISTRATION_CONTRACT", payload);
+  },
   updateWriteGoldCoinContract({ commit }, payload) {
     commit("SET_WRITE_GOLD_COIN_CONTRACT", payload);
   },
@@ -74,6 +99,9 @@ const actions = {
   },
   updateWriteUniqueCardsContract({ commit }, payload) {
     commit("SET_WRITE_UNIQUE_CARDS_CONTRACT", payload);
+  },
+  updateWritePlayerRegistrationContract({ commit }, payload) {
+    commit("SET_WRITE_PLAYER_REGISTRATION_CONTRACT", payload);
   },
 };
 
