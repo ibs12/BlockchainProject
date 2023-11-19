@@ -95,6 +95,13 @@ contract PlayerRegistration {
     }
 
     function startGame(address player1, address player2) external {
+        // Mark all player cards as active
+        for (uint256 i = 0; i < getPlayerCards(player1).length; i++) {
+            activeCards[getPlayerCards(player1)[i]] = true;
+        }
+        for (uint256 i = 0; i < getPlayerCards(player2).length; i++) {
+            activeCards[getPlayerCards(player2)[i]] = true;
+        }
         uint256 betAmount = 100 * 10 ** 18; // 100 GoldCoins
 
         // Ensure both players have sufficient balance and have consented
@@ -126,6 +133,18 @@ contract PlayerRegistration {
         nextGameId++; // Increment the game ID for the next game
     }
 
+    mapping(uint256 => bool) public activeCards;
+
+    function isPlayerDefeated(address player) private view returns (bool) {
+        Player memory playerData = players[player];
+        for (uint256 i = 0; i < playerData.cardIds.length; i++) {
+            if (activeCards[playerData.cardIds[i]]) {
+                return false; // Player still has active cards
+            }
+        }
+        return true; // All cards are defeated
+    }
+
     function attackCard(
         uint256 gameId,
         uint256 attackerCardId,
@@ -153,8 +172,39 @@ contract PlayerRegistration {
             uint256 newDefense = defenderDefense - attackerAttack;
             cardsContract.updateCardDefense(defenderCardId, newDefense);
         } else {
-            // Card is defeated, burn the defender's card
-            cardsContract.burnCard(defenderCardId);
+            // Card is defeated, mark it as inactive
+            activeCards[defenderCardId] = false;
         }
+
+        // Check if either player has been defeated
+        if (isPlayerDefeated(game.player2)) {
+            endGame(gameId, game.player1); // Player 1 wins
+        } else if (isPlayerDefeated(game.player1)) {
+            endGame(gameId, game.player2); // Player 2 wins
+        }
+    }
+
+    function resetActiveCards(address player) private {
+        Player storage playerData = players[player];
+        for (uint256 i = 0; i < playerData.cardIds.length; i++) {
+            activeCards[playerData.cardIds[i]] = true; // Reset card to active
+        }
+    }
+
+    function endGame(uint256 gameId, address winner) private {
+        Game storage game = games[gameId];
+        uint256 totalBet = game.betAmount * 2;
+        goldCoinContract.transfer(winner, totalBet); // Award the winner
+
+        // Reset game state
+        game.isActive = false;
+        playerBets[game.player1] = 0;
+        playerBets[game.player2] = 0;
+
+        // Reset active cards for both players
+        resetActiveCards(game.player1);
+        resetActiveCards(game.player2);
+
+        // Other cleanup operations
     }
 }
