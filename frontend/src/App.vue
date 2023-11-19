@@ -9,43 +9,12 @@
         </v-btn>
       </v-btn-toggle>
       <v-spacer></v-spacer>
-      <v-btn v-if="!currentAccount" color="error" @click="connectWallet">
+      <v-btn v-if="!playerAccount" color="error" @click="connectWallet">
         Connect Wallet
       </v-btn>
       <div v-else>
-        <h4>Current Account: </h4> {{ currentAccount }}
+        <h4>Current Player Account: </h4> {{ playerAccount }}
       </div>
-      <!-- <button class="primaryButton" @click="connectWallet">Connect Wallet</button> -->
-      <!-- <div class="d-flex  align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
-
-      <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn> -->
     </v-app-bar>
 
     <v-main>
@@ -58,6 +27,7 @@
 import GoldCoin from './../../build/contracts/GoldCoin.json'
 import GameItems from './../../build/contracts/GameItems.json'
 import UniqueCards from './../../build/contracts/UniqueCards.json'
+import PlayerRegistration from './../../build/contracts/PlayerRegistration.json'
 
 import { routerPush } from './utils/constants';
 import { mapState, mapActions } from 'vuex';
@@ -66,7 +36,7 @@ export default {
 
   data: () => ({}),
   computed: {
-    ...mapState('contract', ['currentAccount', 'goldCoinContractAddress', 'gameItemsContractAddress', 'uniqueCardsContractAddress', 'readOnlyGoldCoinContract', 'readOnlyGameItemsContract', 'readOnlyUniqueCardsContract', 'writeGoldCoinContract', 'writeGameItemsContract', 'writeUniqueCardsContract']),
+    ...mapState('contract', ['adminAccount', 'playerAccount', 'goldCoinContractAddress', 'gameItemsContractAddress', 'uniqueCardsContractAddress', 'playerRegistrationContractAddress', 'readOnlyGoldCoinContract', 'readOnlyGameItemsContract', 'readOnlyUniqueCardsContract', 'readOnlyPlayerRegistrationContract', 'writeGoldCoinContract', 'writeGameItemsContract', 'writeUniqueCardsContract', 'writePlayerRegistrationContract']),
     ...mapState('contractMethods', ['currentPhase'])
   },
   async mounted() {
@@ -76,7 +46,7 @@ export default {
     this.checkConnectedWalletExist();
   },
   methods: {
-    ...mapActions('contract', ['updateCurrentAccount', 'updateGoldCoinContractAddress', 'updateGameItemsContractAddress', 'updateUniqueCardsContractAddress', 'updateReadOnlyGoldCoinContract', 'updateReadOnlyGameItemsContract', 'updateReadOnlyUniqueCardsContract', 'updateWriteGoldCoinContract', 'updateWriteGameItemsContract', 'updateWriteUniqueCardsContract']),
+    ...mapActions('contract', ['updateAdminAccount', 'updatePlayerAccount', 'updateGoldCoinContractAddress', 'updateGameItemsContractAddress', 'updateUniqueCardsContractAddress', 'updatePlayerRegistrationContractAddress', 'updateReadOnlyGoldCoinContract', 'updateReadOnlyGameItemsContract', 'updateReadOnlyUniqueCardsContract', 'updateReadOnlyPlayerRegistrationContract', 'updateWriteGoldCoinContract', 'updateWriteGameItemsContract', 'updateWriteUniqueCardsContract', 'updateWritePlayerRegistrationContract']),
     ...mapActions('contractMethods', ['updateCurrentPhase']),
     goToAdmin() {
       routerPush(this, "admin")
@@ -97,8 +67,7 @@ export default {
         if (accounts.length !== 0) {
           const account = accounts[0];
           console.log("Found an authorized account:", account);
-          this.updateCurrentAccount(account)
-          // this.currentAccount = account;
+          this.updatePlayerAccount(account)
           return true;
         } else {
           console.log("No authorized account found");
@@ -120,18 +89,17 @@ export default {
           method: "eth_requestAccounts",
         });
         console.log("Connected", accounts[0]);
-        this.updateCurrentAccount(accounts[0])
+        this.updatePlayerAccount(accounts[0])
       } catch (error) {
         console.log(error);
       }
     },
     attachContracts: async function () {
-      console.log(this.$ethers)
       const provider = new this.$ethers.JsonRpcProvider("http://127.0.0.1:7545");
-      console.log(provider)
       const signer = await provider.getSigner()
       // const network = await provider.getNetwork();
       // console.log(network);
+
       const goldCoinAbi = GoldCoin.abi;
       const readOnlyGc = await new this.$ethers.Contract(this.goldCoinContractAddress, goldCoinAbi, provider);
       const writeGc = await new this.$ethers.Contract(this.goldCoinContractAddress, goldCoinAbi, signer);
@@ -150,26 +118,15 @@ export default {
       await this.updateReadOnlyGameItemsContract(readOnlyGi)
       await this.updateWriteGameItemsContract(writeGi)
 
-      // console.log(await readOnlyGc);
-      // console.log(await readOnlyGc.owner())
-      // console.log(await readOnlyGc.balanceOf("0x8AfA8198273Ca1113961514F4195DD6Ab740a3B1"))
-      // console.log(await readOnlyGc.balanceOf("0x5F45Aa4c39E0FfCAE17548C11cB9066b4478Bb22"))
-      // console.log(await writeGc.transfer("0x5F45Aa4c39E0FfCAE17548C11cB9066b4478Bb22", "100000"))
-      // console.log(await readOnlyGc.balanceOf("0x8AfA8198273Ca1113961514F4195DD6Ab740a3B1"))
-      // console.log(await readOnlyGc.balanceOf("0x5F45Aa4c39E0FfCAE17548C11cB9066b4478Bb22"))
-      // console.log(await gc.symbol());
-      // console.log(await this.currentContract.symbol());
-
-      // console.log(await readOnlyGi);
-      // console.log(await readOnlyGi.getAllBalances);
-      // console.log(await writeGi.owner());
-      // console.log(await writeUc.createUniqueCard('test', 'tessst'));
-      // console.log(await readOnlyGi.currPhase());
+      const playerRegistrationAbi = PlayerRegistration.abi;
+      const readOnlyPr = await new this.$ethers.Contract(this.playerRegistrationContractAddress, playerRegistrationAbi, provider);
+      const writePr = await new this.$ethers.Contract(this.playerRegistrationContractAddress, playerRegistrationAbi, signer);
+      await this.updateReadOnlyPlayerRegistrationContract(readOnlyPr)
+      await this.updateWritePlayerRegistrationContract(writePr)
     },
     initializeContractFunctions: async function () {
+      console.log(this.readOnlyGameItemsContract)
       this.updateCurrentPhase(await this.readOnlyGameItemsContract.currPhase())
-      // console.log(await this.readOnlyGameItemsContract.currPhase())
-      // console.log(this.currentPhase)
     }
   },
 };
