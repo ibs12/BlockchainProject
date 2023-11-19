@@ -16,6 +16,24 @@ contract GameItems is ERC1155, Ownable {
     GoldCoin private erc20Token;
     UniqueCards private erc721Token;
 
+    enum Phase {
+        Register,
+        Play,
+        Done
+    }
+
+    Phase public currPhase = Phase.Register;
+    //modifiers
+    modifier validPhase(Phase reqPhase) {
+        require(currPhase == reqPhase);
+        _;
+    }
+
+    function changePhase(Phase x) public onlyOwner() {
+        // require(x > currPhase);
+        currPhase = x;
+    }
+
     enum ItemType {
         PowerUp,
         Mod,
@@ -77,29 +95,25 @@ contract GameItems is ERC1155, Ownable {
         _burn(owner, itemId, amount);
     }
 
-    function purchaseItem(uint256 itemId, uint256 amount) external payable {
+    function purchaseItem(uint256 itemId) external payable {
         require(items[itemId].id == itemId, "Item does not exist.");
 
         uint256 price;
 
         if (items[itemId].itemType == ItemType.PowerUp) {
-            price = 10 * 1e18; // Setting the price for power-ups
-            playerPowerUps[msg.sender] += amount; // Tracking power-up purchases
-        } else if (items[itemId].itemType == ItemType.Mod) {
-            price = 20 * 1e18;
-        } else if (items[itemId].itemType == ItemType.UniqueAttribute) {
-            price = 30 * 1e18;
+            price = 1 * 1e18; // Setting the price for power-ups
+            playerPowerUps[msg.sender] += 1; // Tracking power-up purchases
         }
 
-        require(msg.value >= price * amount, "Insufficient ETH sent.");
-        _mint(msg.sender, itemId, amount, "");
+        require(msg.value >= price * 1, "Insufficient ETH sent.");
+        _mint(msg.sender, itemId, 1, "");
         payable(owner()).transfer(msg.value);
     }
 
-    function purchaseWithGoldCoin(uint256 itemId, uint256 amount) external {
+    function purchaseWithGoldCoin(uint256 itemId) external {
         uint256 price = 30; // Assuming a fixed price for all items when purchased with GoldCoin
         erc20Token.transferFrom(msg.sender, address(this), price);
-        _mint(msg.sender, itemId, amount, "");
+        _mint(msg.sender, itemId, 1, "");
     }
 
     function tradeUniqueCardForItem(uint256 cardId, uint256 itemId) external {
