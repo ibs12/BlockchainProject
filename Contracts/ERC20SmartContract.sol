@@ -13,10 +13,10 @@ contract GoldCoin is ERC20, Ownable {
         uint256 initialContractSupply
     ) ERC20("GoldCoin", "GC") {
         // Mint initial supply to the owner
-        _mint(initialOwner, initialOwnerSupply * 10 ** 18);
+        _mint(initialOwner, initialOwnerSupply);
 
         // Mint initial supply to the contract itself
-        _mint(address(this), initialContractSupply * 10 ** 18);
+        _mint(address(this), initialContractSupply);
     }
 
     function mint(address to, uint256 amount) public onlyOwner {

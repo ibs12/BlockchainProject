@@ -48,30 +48,40 @@ contract PlayerRegistration {
             ) % 15) + 1;
     }
 
+    struct Player {
+        address playerAddress;
+        uint256[] cardIds; // Array of owned card IDs
+    }
+
+    mapping(address => Player) public players;
+
     function registerPlayer() public {
-        // Loop to create and assign 5 unique cards to the player
+        Player storage player = players[msg.sender];
+        player.playerAddress = msg.sender;
+
+        // Assign 5 unique cards to the player
         for (uint256 i = 0; i < 5; i++) {
             uint256 attack = pseudoRandom();
             uint256 defense = pseudoRandom();
-
-            // Create a new ERC721 card with random attack and defense
             uint256 newCardId = cardsContract.createUniqueCard(
                 "Starter Card",
                 "This is a starter card for new players",
                 attack,
                 defense
             );
-
-            // Transfer the newly created card to the player
             cardsContract.transferFrom(address(this), msg.sender, newCardId);
+            player.cardIds.push(newCardId); // Add new card ID to the player's card list
         }
 
-        // Check if the player has purchased a power-up and assign it
-        // if (itemsContract.hasPowerUp(msg.sender)) {
-        //     uint256 powerUpItemId = 1; // Assuming 1 is the ID for the power-up
-        //     itemsContract.mintItem(msg.sender, powerUpItemId, 1); // Mint one power-up
-        //     itemsContract.usePowerUp(msg.sender); // Indicate the power-up is used
-        // }
+        // Assign power-up if available
+        // ... existing power-up code ...
+    }
+
+    // Function to get a player's card IDs
+    function getPlayerCards(
+        address playerAddress
+    ) public view returns (uint256[] memory) {
+        return players[playerAddress].cardIds;
     }
 
     function startGame(address player1, address player2) external {

@@ -4,19 +4,23 @@ const GameItems = artifacts.require("GameItems");
 const PlayerRegistration = artifacts.require("PlayerRegistration");
 
 module.exports = async function (deployer, network, accounts) {
-    // Deploy the GoldCoin contract
-    await deployer.deploy(GoldCoin, accounts[0]);
+    const initialOwner = accounts[0];
+    const initialOwnerSupply = 1000000;  // Adjust as needed
+    const initialContractSupply = 500000; // Adjust as needed
+
+    // Deploy GoldCoin with correct constructor parameters
+    await deployer.deploy(GoldCoin, initialOwner, initialOwnerSupply, initialContractSupply);
     const goldCoinInstance = await GoldCoin.deployed();
 
-    // Deploy the UniqueCards contract
+    // Deploy UniqueCards
     await deployer.deploy(UniqueCards);
     const uniqueCardsInstance = await UniqueCards.deployed();
 
-    // Deploy the GameItems contract
+    // Deploy GameItems with references to GoldCoin and UniqueCards
     await deployer.deploy(GameItems, goldCoinInstance.address, uniqueCardsInstance.address);
     const gameItemsInstance = await GameItems.deployed();
 
-    // Finally, deploy the PlayerRegistration contract
+    // Deploy PlayerRegistration with references to GoldCoin, UniqueCards, and GameItems
     await deployer.deploy(
         PlayerRegistration, 
         goldCoinInstance.address, 

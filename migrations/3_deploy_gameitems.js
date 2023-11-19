@@ -3,8 +3,12 @@ const UniqueCards = artifacts.require("UniqueCards");
 const GameItems = artifacts.require("GameItems");
 
 module.exports = async function (deployer, network, accounts) {
-  // Deploy GoldCoin and UniqueCards first if they are not already deployed
-  await deployer.deploy(GoldCoin, accounts[0]);
+  const initialOwner = accounts[0];
+  const initialOwnerSupply = 1000000;  // Example value, adjust as needed
+  const initialContractSupply = 500000; // Example value, adjust as needed
+
+  // Deploy GoldCoin with the necessary constructor parameters
+  await deployer.deploy(GoldCoin, initialOwner, initialOwnerSupply, initialContractSupply);
   const goldCoin = await GoldCoin.deployed();
 
   await deployer.deploy(UniqueCards);
