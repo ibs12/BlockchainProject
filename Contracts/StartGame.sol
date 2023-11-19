@@ -67,11 +67,11 @@ contract PlayerRegistration {
         }
 
         // Check if the player has purchased a power-up and assign it
-        if (itemsContract.hasPowerUp(msg.sender)) {
-            uint256 powerUpItemId = 1; // Assuming 1 is the ID for the power-up
-            itemsContract.mintItem(msg.sender, powerUpItemId, 1); // Mint one power-up
-            itemsContract.usePowerUp(msg.sender); // Indicate the power-up is used
-        }
+        // if (itemsContract.hasPowerUp(msg.sender)) {
+        //     uint256 powerUpItemId = 1; // Assuming 1 is the ID for the power-up
+        //     itemsContract.mintItem(msg.sender, powerUpItemId, 1); // Mint one power-up
+        //     itemsContract.usePowerUp(msg.sender); // Indicate the power-up is used
+        // }
     }
 
     function startGame(address player1, address player2) external {

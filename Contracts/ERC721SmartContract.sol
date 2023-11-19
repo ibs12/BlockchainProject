@@ -1,24 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract UniqueCards is ERC721Enumerable, AccessControl, Ownable {
+contract UniqueCards is ERC721Enumerable, Ownable {
     address private PlayerRegistration;
-    bytes32 public constant CARD_CREATOR_ROLE = keccak256("CARD_CREATOR_ROLE");
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
-
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view override(ERC721Enumerable, AccessControl) returns (bool) {
-        return
-            ERC721Enumerable.supportsInterface(interfaceId) ||
-            AccessControl.supportsInterface(interfaceId);
-    }
 
     struct Card {
         uint256 id;
@@ -30,16 +20,14 @@ contract UniqueCards is ERC721Enumerable, AccessControl, Ownable {
 
     mapping(uint256 => Card) public cards;
 
-    constructor(address playerRegistrationAddress) ERC721("UniqueCards", "UC") {
-        _setupRole(CARD_CREATOR_ROLE, playerRegistrationAddress);
-    }
+    constructor() ERC721("UniqueCards", "UC") {}
 
     function createUniqueCard(
         string memory name,
         string memory description,
         uint256 attack,
         uint256 defense
-    ) external onlyRole(CARD_CREATOR_ROLE) returns (uint256) {
+    ) external returns (uint256) {
         _tokenIds.increment();
         uint256 newCardId = _tokenIds.current();
 
@@ -86,7 +74,7 @@ contract UniqueCards is ERC721Enumerable, AccessControl, Ownable {
     function increaseCardAttributes(
         uint256 cardId,
         uint256 percentIncrease
-    ) external onlyOwner {
+    ) external {
         require(cards[cardId].id == cardId, "Card does not exist.");
         cards[cardId].attack =
             (cards[cardId].attack * (100 + percentIncrease)) /
