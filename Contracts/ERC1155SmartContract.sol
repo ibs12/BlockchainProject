@@ -29,7 +29,7 @@ contract GameItems is ERC1155, Ownable {
         _;
     }
 
-    function changePhase(Phase x) public onlyOwner() {
+    function changePhase(Phase x) public onlyOwner {
         // require(x > currPhase);
         currPhase = x;
     }

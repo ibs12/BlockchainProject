@@ -36772,12 +36772,12 @@
         }
       },
       "links": {},
-      "address": "0x58feB0a6923de7A39DF7218Eb29628242be8ED8C",
-      "transactionHash": "0xd2f7473086c7696e280ac581ae5dc882d51e56d596900a04620996b22ffb3c70"
+      "address": "0x1a45010ee72c87161Dee8474064212232eA5A932",
+      "transactionHash": "0x79d49e341dd5a30209e3dfafc21f225cd0097052c22b52cff8a58ef481bc0e0a"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2023-11-19T18:52:33.267Z",
+  "updatedAt": "2023-11-19T20:35:45.289Z",
   "networkType": "ethereum",
   "devdoc": {
     "events": {

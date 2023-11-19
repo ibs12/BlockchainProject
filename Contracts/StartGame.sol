@@ -78,9 +78,6 @@ contract PlayerRegistration {
             cardsContract.transferFrom(address(this), msg.sender, newCardId);
             player.cardIds.push(newCardId); // Add new card ID to the player's card list
         }
-
-        // Assign power-up if available
-        // ... existing power-up code ...
     }
 
     // Function to get a player's card IDs
@@ -184,27 +181,31 @@ contract PlayerRegistration {
         }
     }
 
-    function resetActiveCards(address player) private {
-        Player storage playerData = players[player];
-        for (uint256 i = 0; i < playerData.cardIds.length; i++) {
-            activeCards[playerData.cardIds[i]] = true; // Reset card to active
-        }
-    }
-
     function endGame(uint256 gameId, address winner) private {
         Game storage game = games[gameId];
         uint256 totalBet = game.betAmount * 2;
         goldCoinContract.transfer(winner, totalBet); // Award the winner
+
+        // Burn cards for both players
+        burnPlayerCards(game.player1);
+        burnPlayerCards(game.player2);
 
         // Reset game state
         game.isActive = false;
         playerBets[game.player1] = 0;
         playerBets[game.player2] = 0;
 
-        // Reset active cards for both players
-        resetActiveCards(game.player1);
-        resetActiveCards(game.player2);
-
         // Other cleanup operations
+    }
+
+    function burnPlayerCards(address player) private {
+        Player storage playerData = players[player];
+        for (uint256 i = 0; i < playerData.cardIds.length; i++) {
+            uint256 cardId = playerData.cardIds[i];
+            if (cardsContract.ownerOf(cardId) == player) {
+                cardsContract.burnCard(cardId);
+            }
+        }
+        delete players[player].cardIds; // Clear the player's card array
     }
 }
