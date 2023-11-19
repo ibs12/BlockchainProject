@@ -45,13 +45,10 @@ contract PlayerRegistration {
                         msg.sender
                     )
                 )
-            ) % 10) + 1;
+            ) % 15) + 1;
     }
 
-    function registerPlayer(address playerAddress) public {
-        // Mint ERC20 tokens to the player
-        goldCoinContract.mint(playerAddress, 1000 * 10 ** 18); // Minting 1000 GoldCoins
-
+    function registerPlayer() public {
         // Loop to create and assign 5 unique cards to the player
         for (uint256 i = 0; i < 5; i++) {
             uint256 attack = pseudoRandom();
@@ -66,14 +63,14 @@ contract PlayerRegistration {
             );
 
             // Transfer the newly created card to the player
-            cardsContract.transferFrom(address(this), playerAddress, newCardId);
+            cardsContract.transferFrom(address(this), msg.sender, newCardId);
         }
 
         // Check if the player has purchased a power-up and assign it
-        if (itemsContract.hasPowerUp(playerAddress)) {
+        if (itemsContract.hasPowerUp(msg.sender)) {
             uint256 powerUpItemId = 1; // Assuming 1 is the ID for the power-up
-            itemsContract.mintItem(playerAddress, powerUpItemId, 1); // Mint one power-up
-            itemsContract.usePowerUp(playerAddress); // Indicate the power-up is used
+            itemsContract.mintItem(msg.sender, powerUpItemId, 1); // Mint one power-up
+            itemsContract.usePowerUp(msg.sender); // Indicate the power-up is used
         }
     }
 
@@ -109,7 +106,7 @@ contract PlayerRegistration {
         nextGameId++; // Increment the game ID for the next game
     }
 
-    function attack(
+    function attackCard(
         uint256 gameId,
         uint256 attackerCardId,
         uint256 defenderCardId
