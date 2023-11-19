@@ -7,8 +7,16 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract GoldCoin is ERC20, Ownable {
     uint256 public rate = 1000; // Number of GoldCoins per Ether
 
-    constructor(address initialOwner) ERC20("GoldCoin", "GC") {
-        _mint(initialOwner, 1000000 * 10 ** decimals());
+    constructor(
+        address initialOwner,
+        uint256 initialOwnerSupply,
+        uint256 initialContractSupply
+    ) ERC20("GoldCoin", "GC") {
+        // Mint initial supply to the owner
+        _mint(initialOwner, initialOwnerSupply * 10 ** 18);
+
+        // Mint initial supply to the contract itself
+        _mint(address(this), initialContractSupply * 10 ** 18);
     }
 
     function mint(address to, uint256 amount) public onlyOwner {
