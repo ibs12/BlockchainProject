@@ -55,9 +55,9 @@
 </template>
 
 <script>
-import GoldCoin from './../../frontend_2/BlockchainProject/build/contracts/GoldCoin.json'
-import GameItems from './../../frontend_2/BlockchainProject/build/contracts/GameItems.json'
-import UniqueCards from './../../frontend_2/BlockchainProject/build/contracts/UniqueCards.json'
+import GoldCoin from './../../build/contracts/GoldCoin.json'
+import GameItems from './../../build/contracts/GameItems.json'
+import UniqueCards from './../../build/contracts/UniqueCards.json'
 
 import { routerPush } from './utils/constants';
 import { mapState, mapActions } from 'vuex';
@@ -73,7 +73,7 @@ export default {
     console.log(this.$ethers)
     await this.attachContracts()
     this.initializeContractFunctions()
-    // this.checkConnectedWalletExist();
+    this.checkConnectedWalletExist();
   },
   methods: {
     ...mapActions('contract', ['updateCurrentAccount', 'updateGoldCoinContractAddress', 'updateGameItemsContractAddress', 'updateUniqueCardsContractAddress', 'updateReadOnlyGoldCoinContract', 'updateReadOnlyGameItemsContract', 'updateReadOnlyUniqueCardsContract', 'updateWriteGoldCoinContract', 'updateWriteGameItemsContract', 'updateWriteUniqueCardsContract']),
