@@ -35,6 +35,21 @@ contract PlayerRegistration {
         itemsContract = GameItems(_itemsAddress);
     }
 
+    event PlayerRegistered(address player);
+    event GameStarted(
+        uint256 gameId,
+        address player1,
+        address player2,
+        uint256 betAmount
+    );
+    event CardAttack(
+        uint256 gameId,
+        uint256 attackerCardId,
+        uint256 defenderCardId,
+        bool defenderDefeated
+    );
+    event GameEnded(uint256 gameId, address winner);
+
     function pseudoRandom() private view returns (uint) {
         return
             (uint(
@@ -78,6 +93,7 @@ contract PlayerRegistration {
             cardsContract.transferFrom(address(this), msg.sender, newCardId);
             player.cardIds.push(newCardId); // Add new card ID to the player's card list
         }
+        emit PlayerRegistered(msg.sender);
     }
 
     // Function to get a player's card IDs
@@ -128,6 +144,7 @@ contract PlayerRegistration {
         });
 
         nextGameId++; // Increment the game ID for the next game
+        emit GameStarted(nextGameId, player1, player2, betAmount);
     }
 
     mapping(uint256 => bool) public activeCards;
@@ -173,6 +190,14 @@ contract PlayerRegistration {
             activeCards[defenderCardId] = false;
         }
 
+        bool defenderDefeated = !activeCards[defenderCardId];
+        emit CardAttack(
+            gameId,
+            attackerCardId,
+            defenderCardId,
+            defenderDefeated
+        );
+
         // Check if either player has been defeated
         if (isPlayerDefeated(game.player2)) {
             endGame(gameId, game.player1); // Player 1 wins
@@ -195,7 +220,7 @@ contract PlayerRegistration {
         playerBets[game.player1] = 0;
         playerBets[game.player2] = 0;
 
-        // Other cleanup operations
+        emit GameEnded(gameId, winner);
     }
 
     function burnPlayerCards(address player) private {

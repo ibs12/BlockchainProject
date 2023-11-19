@@ -7,20 +7,33 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract GoldCoin is ERC20, Ownable {
     uint256 public rate = 1000; // Number of GoldCoins per Ether
 
+    // Define events
+    event Mint(address indexed to, uint256 amount);
+    event GoldCoinPurchase(
+        address indexed buyer,
+        uint256 etherAmount,
+        uint256 goldCoinAmount
+    );
+    event RateChange(uint256 newRate);
+    event Withdrawal(address indexed owner, uint256 amount);
+
     constructor(
         address initialOwner,
         uint256 initialOwnerSupply,
         uint256 initialContractSupply
     ) ERC20("GoldCoin", "GC") {
-        // Mint initial supply to the owner
+        // Mint initial supply to the owner and the contract
         _mint(initialOwner, initialOwnerSupply);
-
-        // Mint initial supply to the contract itself
         _mint(address(this), initialContractSupply);
+
+        // Emit the Mint events
+        emit Mint(initialOwner, initialOwnerSupply);
+        emit Mint(address(this), initialContractSupply);
     }
 
     function mint(address to, uint256 amount) public onlyOwner {
         _mint(to, amount);
+        emit Mint(to, amount);
     }
 
     // Function to allow users to buy GoldCoins with Ether
@@ -33,16 +46,20 @@ contract GoldCoin is ERC20, Ownable {
             "Not enough GoldCoins in the reserve"
         );
         _transfer(address(this), msg.sender, amountTobuy);
+
+        emit GoldCoinPurchase(msg.sender, msg.value, amountTobuy);
     }
 
     // Function to set the exchange rate, only callable by the owner
     function setRate(uint256 newRate) public onlyOwner {
         rate = newRate;
+        emit RateChange(newRate);
     }
 
     // Function to withdraw Ether from the contract, only callable by the owner
     function withdraw() public onlyOwner {
         uint256 balance = address(this).balance;
         payable(owner()).transfer(balance);
+        emit Withdrawal(owner(), balance);
     }
 }

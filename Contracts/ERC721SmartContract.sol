@@ -18,6 +18,29 @@ contract UniqueCards is ERC721Enumerable, Ownable {
         uint256 defense;
     }
 
+    event CardCreation(
+        uint256 indexed cardId,
+        string name,
+        uint256 attack,
+        uint256 defense
+    );
+    event CardPurchase(
+        address indexed buyer,
+        uint256 indexed cardId,
+        uint256 amount
+    );
+    event CardTrade(
+        uint256 indexed cardId,
+        address indexed from,
+        address indexed to
+    );
+    event CardAttributeIncrease(
+        uint256 indexed cardId,
+        uint256 percentIncrease
+    );
+    event CardDefenseUpdate(uint256 indexed cardId, uint256 newDefense);
+    event CardBurned(uint256 indexed cardId);
+
     mapping(uint256 => Card) public cards;
 
     constructor() ERC721("UniqueCards", "UC") {}
@@ -40,6 +63,7 @@ contract UniqueCards is ERC721Enumerable, Ownable {
         });
 
         _mint(msg.sender, newCardId);
+        emit CardCreation(newCardId, name, attack, defense);
         return newCardId;
     }
 
@@ -61,6 +85,7 @@ contract UniqueCards is ERC721Enumerable, Ownable {
 
         // Transfer the ETH to the contract owner or another wallet
         payable(owner()).transfer(msg.value);
+        emit CardPurchase(msg.sender, cardId, msg.value);
     }
 
     function tradeCard(uint256 cardId, address recipient) external {
@@ -68,6 +93,7 @@ contract UniqueCards is ERC721Enumerable, Ownable {
         require(ownerOf(cardId) == msg.sender, "Not the owner of the card.");
 
         // Safely transfer the card to the recipient
+
         _safeTransfer(msg.sender, recipient, cardId, "");
     }
 
@@ -82,6 +108,7 @@ contract UniqueCards is ERC721Enumerable, Ownable {
         cards[cardId].defense =
             (cards[cardId].defense * (100 + percentIncrease)) /
             100;
+        emit CardAttributeIncrease(cardId, percentIncrease);
     }
 
     function getCardAttributes(
@@ -94,11 +121,13 @@ contract UniqueCards is ERC721Enumerable, Ownable {
     function updateCardDefense(uint256 cardId, uint256 newDefense) external {
         require(msg.sender == address(PlayerRegistration), "Unauthorized"); // Only allow PlayerRegistration contract to call this
         cards[cardId].defense = newDefense;
+        emit CardDefenseUpdate(cardId, newDefense);
     }
 
     function burnCard(uint256 cardId) external {
         require(msg.sender == address(PlayerRegistration), "Unauthorized");
         require(ownerOf(cardId) != address(0), "Card does not exist");
         _burn(cardId);
+        emit CardBurned(cardId);
     }
 }
