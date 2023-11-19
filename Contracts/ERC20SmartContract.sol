@@ -38,7 +38,12 @@ contract GoldCoin is ERC20, Ownable {
 
     function buyGoldCoins() public payable {
         uint256 weiAmount = msg.value;
-        uint256 tokensToBuy = (weiAmount * rate) / (10 ** 18); // Adjust for token decimals
+        // Local rate calculation: Number of GoldCoins per wei
+        // For example, 1,000,000 GoldCoins for 1 wei
+        uint256 localRate = 10000; // Adjust this rate as needed for testing
+
+        // Calculate the number of tokens to buy
+        uint256 tokensToBuy = weiAmount * localRate;
         uint256 dexBalance = balanceOf(address(this));
         require(tokensToBuy > 0, "You need to send some Ether");
         require(
