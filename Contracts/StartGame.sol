@@ -55,9 +55,15 @@ contract PlayerRegistration {
 
     mapping(address => Player) public players;
 
+    address[] public allPlayers;
+
     function registerPlayer() public {
         Player storage player = players[msg.sender];
         player.playerAddress = msg.sender;
+
+        if (players[msg.sender].playerAddress == address(0)) {
+            allPlayers.push(msg.sender);
+        }
 
         // Assign 5 unique cards to the player
         for (uint256 i = 0; i < 5; i++) {
@@ -82,6 +88,10 @@ contract PlayerRegistration {
         address playerAddress
     ) public view returns (uint256[] memory) {
         return players[playerAddress].cardIds;
+    }
+
+    function getAllPlayers() public view returns (address[] memory) {
+        return allPlayers;
     }
 
     function startGame(address player1, address player2) external {
