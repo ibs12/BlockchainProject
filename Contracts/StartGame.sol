@@ -74,22 +74,31 @@ contract PlayerRegistration {
 
     function registerPlayer(address currPlayer) public {
         Player storage player = players[currPlayer];
-        player.playerAddress = currPlayer;
 
-        // Assign 5 unique cards to the player
-        for (uint256 i = 0; i < 5; i++) {
-            uint256 attack = pseudoRandom();
-            uint256 defense = pseudoRandom();
-            uint256 newCardId = cardsContract.createUniqueCard(
-                "Starter Card",
-                "This is a starter card for new players",
-                attack,
-                defense
-            );
-            cardsContract.transferFrom(address(this), currPlayer, newCardId);
-            player.cardIds.push(newCardId); // Add new card ID to the player's card list
+        // Check if the player is already registered
+        if (player.playerAddress == address(0)) {
+            player.playerAddress = currPlayer;
+            allPlayers.push(currPlayer); // Add new player to the array
+
+            // Assign 5 unique cards to the player
+            for (uint256 i = 0; i < 5; i++) {
+                uint256 attack = pseudoRandom();
+                uint256 defense = pseudoRandom();
+                uint256 newCardId = cardsContract.createUniqueCard(
+                    "Starter Card",
+                    "This is a starter card for new players",
+                    attack,
+                    defense
+                );
+                cardsContract.transferFrom(
+                    address(this),
+                    currPlayer,
+                    newCardId
+                );
+                player.cardIds.push(newCardId); // Add new card ID to the player's card list
+            }
+            emit PlayerRegistered(currPlayer);
         }
-        emit PlayerRegistered(currPlayer);
     }
 
     // Function to get a player's card IDs
