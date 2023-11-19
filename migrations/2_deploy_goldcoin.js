@@ -1,8 +1,8 @@
 const GoldCoin = artifacts.require("GoldCoin");
 
-module.exports = async function(deployer, network, accounts) {
-    // Replace 'accounts[0]' with the appropriate address if necessary
+module.exports = function(deployer, network, accounts) {
+    // Use the first account as the initial owner
     const initialOwner = accounts[0];
 
-    await deployer.deploy(GoldCoin, initialOwner);
+    deployer.deploy(GoldCoin, initialOwner);
 };
