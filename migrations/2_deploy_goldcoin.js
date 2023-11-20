@@ -6,8 +6,10 @@ module.exports = function(deployer, network, accounts) {
     const initialOwnerSupply = 1000000; // The amount of tokens for the initial owner
     const initialContractSupply = 500000; // The amount of tokens for the contract
 
-    const initialOwnerSupplyInWei = web3.utils.toWei('1000000', 'ether'); // Owner supply
-    const initialContractSupplyInWei = web3.utils.toWei('500000', 'ether'); // Contract supply
-    
+    // Convert token amounts to the smallest unit considering decimals (assuming 18 decimals)
+    const initialOwnerSupplyInWei = web3.utils.toWei(initialOwnerSupply.toString(), 'ether');
+    const initialContractSupplyInWei = web3.utils.toWei(initialContractSupply.toString(), 'ether');
+
+    // Deploy the contract with the specified parameters
     deployer.deploy(GoldCoin, initialOwner, initialOwnerSupplyInWei, initialContractSupplyInWei);
-}    
+};
