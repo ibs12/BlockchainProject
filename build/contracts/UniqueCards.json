@@ -29943,12 +29943,12 @@
         }
       },
       "links": {},
-      "address": "0x86700b01158786AE57f1458f59bA00Bcc408D941",
-      "transactionHash": "0x3c1322c51ee515b2f1aed97c033a2190f1549e4fc338ca04bfd5d31134d8aa94"
+      "address": "0x28034Fd23AA61053a0C3D0425B931069FE1f3447",
+      "transactionHash": "0xb05b58e493969dd52d67e267c9fe2663e3a558a34ba591ca7f477af311798327"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2023-11-19T23:10:49.165Z",
+  "updatedAt": "2023-11-20T01:47:14.168Z",
   "networkType": "ethereum",
   "devdoc": {
     "events": {
