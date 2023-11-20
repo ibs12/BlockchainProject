@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract GoldCoin is ERC20, Ownable {
     // Define events
-    uint256 initialOwnerSupply = 1000000;  // Adjust as needed
+    uint256 initialOwnerSupply = 1000000; // Adjust as needed
     uint256 initialContractSupply = 500000; // Adjust as needed
     event Mint(address indexed to, uint256 amount);
     event GoldCoinPurchase(
@@ -17,8 +17,7 @@ contract GoldCoin is ERC20, Ownable {
     event RateChange(uint256 newRate);
     event Withdrawal(address indexed owner, uint256 amount);
 
-    constructor(
-    ) ERC20("GoldCoin", "GC") {
+    constructor() ERC20("GoldCoin", "GC") {
         address initialOwner = msg.sender;
         // Mint initial supply to the owner and the contract
         _mint(initialOwner, initialOwnerSupply * 10 ** 18);
@@ -34,13 +33,13 @@ contract GoldCoin is ERC20, Ownable {
         emit Mint(to, amount);
     }
 
-    function buyGoldCoins() public payable {
-        uint256 etherPrice = 0.00001 ether; // Fixed price for buying GoldCoins
+    function buyGoldCoins() external payable {
+        uint256 price = 0.1 ether; // Fixed price for buying 1000 GoldCoins
         uint256 goldCoinsPerPurchase = 1000 * 10 ** decimals(); // Fixed amount of GoldCoins per purchase
 
         require(
-            msg.value == etherPrice,
-            "Send exactly 0.00001 Ether to purchase GoldCoins."
+            msg.value == price,
+            "Send exactly 0.00001 Ether to purchase 1000 GoldCoins."
         );
 
         uint256 dexBalance = balanceOf(address(this));
@@ -50,7 +49,7 @@ contract GoldCoin is ERC20, Ownable {
         );
 
         _transfer(address(this), msg.sender, goldCoinsPerPurchase);
-        payable(owner()).transfer(msg.value);
+
         emit GoldCoinPurchase(msg.sender, msg.value, goldCoinsPerPurchase);
     }
 
