@@ -36,7 +36,7 @@ contract GoldCoin is ERC20, Ownable {
         emit Mint(to, amount);
     }
 
-    function buyGoldCoins() public payable {
+    function buyGoldCoins(address player) public payable {
         uint256 weiAmount = msg.value;
         // Assuming the token has 18 decimals, like Ether
         // This will give the buyer 1000 GoldCoins for each wei sent
@@ -48,9 +48,9 @@ contract GoldCoin is ERC20, Ownable {
             tokensToBuy <= dexBalance,
             "Not enough GoldCoins in the reserve"
         );
-        _transfer(address(this), msg.sender, tokensToBuy);
+        _transfer(address(this), player, tokensToBuy);
 
-        emit GoldCoinPurchase(msg.sender, weiAmount, tokensToBuy);
+        emit GoldCoinPurchase(player, weiAmount, tokensToBuy);
     }
 
     // Function to set the exchange rate, only callable by the owner

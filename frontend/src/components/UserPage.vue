@@ -4,15 +4,32 @@
       User Page
     </v-app-bar>
     <v-container>
-      <v-card elevation="4" class="" color="">
+      <v-card elevation="4" class="mt-5 " color="">
         <p class="ma-4 pa-6 text-center text-h3">
           <span class="font-weight-bold">Current Phase:</span> <span> {{ currentPhaseMapped[currentPhase] }}</span>
         </p>
       </v-card>
-      <v-card elevation="3" class="py-5 " color="">
+
+      <v-card elevation="3" class="mt-5 py-5" color="">
         <v-card-title class="text-h5 font-weight-bold">User Registration</v-card-title>
         <v-btn color="primary" class="ml-8" @click="registerUser" v-show="currentPhase == 0" :disabled="playerRegistered">
-          Register for the game {{ playerRegistered }}
+          Register for the game
+        </v-btn>
+        <p class="py-6 px-8" v-if="playerRegistered">
+          <span class="font-weight-bold">You have already registered for the game!</span>
+        </p>
+      </v-card>
+
+      <v-card elevation="3" class="mt-5 py-5 " color="">
+        <v-card-title class="text-h5 font-weight-bold">Purchase Gold Coins</v-card-title>
+        <p class="pt-6 px-8">
+          <span class="">You can purchase bags of coins (1000 coins) for 0.0000001 ether each. Make sure you have at least
+            much ether in your metamask wallet.</span>
+        </p>
+        <v-text-field class="px-8" v-model="bagsOfCoins" label="How many bags of coins do you want?" type="number"></v-text-field>
+        <v-btn color="primary" class="mt-6 ml-8" @click="purchaseGoldCoins" v-show="currentPhase == 0"
+          >
+          Purchase gold coins using ether
         </v-btn>
         <p class="py-6 px-8" v-if="playerRegistered">
           <span class="font-weight-bold">You have already registered for the game!</span>
@@ -33,12 +50,13 @@ export default {
       0: 'Register',
       1: 'Play',
       2: 'Game Over',
-    }
+    },
+    bagsOfCoins: ''
   }),
   computed: {
     ...mapState('contract', ['adminAccount', 'playerAccount', 'goldCoinContractAddress', 'gameItemsContractAddress', 'uniqueCardsContractAddress', 'playerRegistrationContractAddress', 'readOnlyGoldCoinContract', 'readOnlyGameItemsContract', 'readOnlyUniqueCardsContract', 'readOnlyPlayerRegistrationContract', 'writeGoldCoinContract', 'writeGameItemsContract', 'writeUniqueCardsContract', 'writePlayerRegistrationContract']),
     ...mapState('contractMethods', ['currentPhase', 'playerRegistered']),
-    ...mapGetters('contractMethods', ['getCurrentPhase', 'getPlayerRegistered']),
+    ...mapGetters('contractMethods', ['getCurrentPhase', 'getPlayerRegistered'])
   },
   mounted() {
     console.log('user')
@@ -52,6 +70,26 @@ export default {
         await this.writePlayerRegistrationContract.registerPlayer(this.playerAccount);
         this.updatePlayerRegistered(true)
         console.log(await this.readOnlyPlayerRegistrationContract.getAllPlayers())
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    async purchaseGoldCoins() {
+      // console.log(this.playerAccount)
+      try {
+        console.log(this.bagsOfCoins)
+        // await this.writePlayerRegistrationContract.registerPlayer(this.playerAccount);
+        console.log(this.bagsOfCoins)
+        // this.updatePlayerRegistered(true)
+        console.log(await this.readOnlyPlayerRegistrationContract.getPlayerCards(this.playerAccount))
+        // console.log(await this.writeGoldCoinContract.buyGoldCoins('0x5F45Aa4c39E0FfCAE17548C11cB9066b4478Bb22', {
+        //   value: 100,
+        //   // from: this.adminAccount,
+        //   // from: this.playerAccount,
+        //   // from: '0x5F45Aa4c39E0FfCAE17548C11cB9066b4478Bb22'
+        // }))
+        console.log(await this.readOnlyGoldCoinContract.balanceOf('0x5F45Aa4c39E0FfCAE17548C11cB9066b4478Bb22'))
+        console.log()
       } catch (e) {
         console.error(e)
       }
