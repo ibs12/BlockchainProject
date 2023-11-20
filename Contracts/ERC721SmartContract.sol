@@ -67,37 +67,7 @@ contract UniqueCards is ERC721Enumerable, Ownable {
         return newCardId;
     }
 
-    function purchaseUniqueCard(uint256 cardId) external payable {
-        // Ensure the card exists
-        require(cards[cardId].id == cardId, "Card does not exist.");
-
-        // Check if the card is owned by the contract owner/admin
-        require(
-            ownerOf(cardId) == owner(),
-            "Card is not available for purchase."
-        );
-
-        // Implement the logic for the purchase amount (e.g., fixed amount, auction, etc.)
-        require(msg.value >= 0.01 ether, "Insufficient ETH sent.");
-
-        // Transfer ownership of the card to the buyer
-        _safeTransfer(owner(), msg.sender, cardId, "");
-
-        // Transfer the ETH to the contract owner or another wallet
-        payable(owner()).transfer(msg.value);
-        emit CardPurchase(msg.sender, cardId, msg.value);
-    }
-
-    function tradeCard(uint256 cardId, address recipient) external {
-        // Ensure the caller is the current owner of the card
-        require(ownerOf(cardId) == msg.sender, "Not the owner of the card.");
-
-        // Safely transfer the card to the recipient
-
-        _safeTransfer(msg.sender, recipient, cardId, "");
-    }
-
-    function increaseCardAttributes(
+    function increaseCardAttack(
         uint256 cardId,
         uint256 percentIncrease
     ) external {
@@ -105,6 +75,17 @@ contract UniqueCards is ERC721Enumerable, Ownable {
         cards[cardId].attack =
             (cards[cardId].attack * (100 + percentIncrease)) /
             100;
+        // cards[cardId].defense =
+        //     (cards[cardId].defense * (100 + percentIncrease)) /
+        //     100;
+        emit CardAttributeIncrease(cardId, percentIncrease);
+    }
+
+    function increaseCardDefense(
+        uint256 cardId,
+        uint256 percentIncrease
+    ) external {
+        require(cards[cardId].id == cardId, "Card does not exist.");
         cards[cardId].defense =
             (cards[cardId].defense * (100 + percentIncrease)) /
             100;

@@ -45,6 +45,7 @@ contract GameItems is ERC1155, Ownable {
     }
     mapping(uint256 => Item) public items;
     mapping(address => uint256) private playerPowerUps;
+    mapping(address => uint256) private playerModPowerUps;
 
     // Event declarations
     event ItemCreated(
@@ -62,6 +63,7 @@ contract GameItems is ERC1155, Ownable {
         string paymentType
     );
     event PowerUpUsed(address indexed player, uint256[] cardIds);
+    event ModPowerUpUsed(address indexed player, uint256[] cardIds);
 
     constructor(
         address _erc20Address,
@@ -109,7 +111,14 @@ contract GameItems is ERC1155, Ownable {
 
     function purchaseItem(uint256 itemId) external payable {
         require(items[itemId].id == itemId, "Item does not exist.");
-        uint256 price = 1 * 1e18; // Example price for power-ups
+        uint256 price;
+
+        if (items[itemId].itemType == ItemType.PowerUp) {
+            price = 1 * 1e18;
+        } else if (items[itemId].itemType == ItemType.Mod) {
+            price = 2 * 1e18;
+        }
+
         require(msg.value >= price, "Insufficient ETH sent.");
         _mint(msg.sender, itemId, 1, "");
         payable(owner()).transfer(msg.value);
@@ -123,14 +132,21 @@ contract GameItems is ERC1155, Ownable {
         emit ItemPurchased(msg.sender, itemId, 1, "GoldCoin");
     }
 
-    function tradeUniqueCardForItem(uint256 cardId, uint256 itemId) external {
-        require(
-            erc721Token.ownerOf(cardId) == msg.sender,
-            "Not the owner of the unique card."
-        );
-        erc721Token.tradeCard(cardId, address(this));
-        _mint(msg.sender, itemId, 1, "");
-        emit ItemPurchased(msg.sender, itemId, 1, "Trade");
+    function useModPowerUp(address player) external {
+        require(playerModPowerUps[player] > 0, "No mod power-ups available");
+        playerModPowerUps[player] -= 1;
+        uint256 cardCount = erc721Token.balanceOf(player);
+        uint256[] memory cardIds = new uint256[](cardCount);
+        for (uint256 i = 0; i < cardCount; i++) {
+            uint256 cardId = erc721Token.tokenOfOwnerByIndex(player, i);
+            erc721Token.increaseCardDefense(cardId, 10); // Modify the attribute increase as needed
+            cardIds[i] = cardId;
+        }
+        emit ModPowerUpUsed(player, cardIds);
+    }
+
+    function hasModPowerUp(address player) external view returns (bool) {
+        return playerModPowerUps[player] > 0;
     }
 
     function usePowerUp(address player) external {
@@ -140,7 +156,7 @@ contract GameItems is ERC1155, Ownable {
         uint256[] memory cardIds = new uint256[](cardCount);
         for (uint256 i = 0; i < cardCount; i++) {
             uint256 cardId = erc721Token.tokenOfOwnerByIndex(player, i);
-            erc721Token.increaseCardAttributes(cardId, 10);
+            erc721Token.increaseCardAttack(cardId, 10);
             cardIds[i] = cardId;
         }
         emit PowerUpUsed(player, cardIds);
