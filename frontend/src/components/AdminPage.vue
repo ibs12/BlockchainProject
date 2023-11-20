@@ -34,18 +34,28 @@ export default {
   async mounted() {
   },
   computed: {
-    ...mapState('contract', ['currentAccount', 'goldCoinContractAddress', 'gameItemsContractAddress', 'uniqueCardsContractAddress', 'readOnlyGoldCoinContract', 'readOnlyGameItemsContract', 'readOnlyUniqueCardsContract', 'writeGoldCoinContract', 'writeGameItemsContract', 'writeUniqueCardsContract']),
-    ...mapState('contractMethods', ['currentPhase']),
-    ...mapGetters('contractMethods', ['getCurrentPhase']),
+    ...mapState('contract', ['adminAccount', 'playerAccount', 'goldCoinContractAddress', 'gameItemsContractAddress', 'uniqueCardsContractAddress', 'playerRegistrationContractAddress', 'readOnlyGoldCoinContract', 'readOnlyGameItemsContract', 'readOnlyUniqueCardsContract', 'readOnlyPlayerRegistrationContract', 'writeGoldCoinContract', 'writeGameItemsContract', 'writeUniqueCardsContract', 'writePlayerRegistrationContract']),
+    ...mapState('contractMethods', ['currentPhase', 'playerRegistered']),
+    ...mapGetters('contractMethods', ['getCurrentPhase', 'getPlayerRegistered']),
   },
   methods: {
-    ...mapActions('contract', ['updateCurrentAccount', 'updateGoldCoinContractAddress', 'updateGameItemsContractAddress', 'updateUniqueCardsContractAddress', 'updateReadOnlyGoldCoinContract', 'updateReadOnlyGameItemsContract', 'updateReadOnlyUniqueCardsContract', 'updateWriteGoldCoinContract', 'updateWriteGameItemsContract', 'updateWriteUniqueCardsContract']),
-    ...mapActions('contractMethods', ['updateCurrentPhase']),
+    ...mapActions('contract', ['updateAdminAccount', 'updatePlayerAccount', 'updateGoldCoinContractAddress', 'updateGameItemsContractAddress', 'updateUniqueCardsContractAddress', 'updatePlayerRegistrationContractAddress', 'updateReadOnlyGoldCoinContract', 'updateReadOnlyGameItemsContract', 'updateReadOnlyUniqueCardsContract', 'updateReadOnlyPlayerRegistrationContract', 'updateWriteGoldCoinContract', 'updateWriteGameItemsContract', 'updateWriteUniqueCardsContract', 'updateWritePlayerRegistrationContract']),
+    ...mapActions('contractMethods', ['updateCurrentPhase', 'updatePlayerRegistered']),
     async nextGamePhase() {
       let phase = this.currentPhase
       await this.writeGameItemsContract.changePhase(++phase)
       this.updateCurrentPhase(await this.readOnlyGameItemsContract.currPhase())
-    }
+      if (this.currentPhase == 2) {
+        this.endgame()
+      }
+    },
+    async createPowerUp() {
+      await this.writeGameItemsContract.createItem(0, 'power up 0', 'this is a power up')
+      // console.log(await this.readOnlyGameItemsContract.items())
+    },
+    async endgame() {
+      // console.log(await this.readOnlyGameItemsContract.items())
+    },
   },
 }
 </script>
