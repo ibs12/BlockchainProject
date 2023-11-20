@@ -1,6 +1,33 @@
 const state = {
   currentPhase: null,
   playerRegistered: false,
+  starterCards: [
+    {
+      title: "Start card 1",
+      attack: 100,
+      defense: 200
+    },
+    {
+      title: "Start card 2",
+      attack: 101,
+      defense: 201
+    },
+    {
+      title: "Start card 3",
+      attack: 102,
+      defense: 202
+    },
+    {
+      title: "Start card 4",
+      attack: 103,
+      defense: 203
+    },
+    {
+      title: "Start card 5",
+      attack: 104,
+      defense: 204
+    },
+  ]
 };
 
 const mutations = {

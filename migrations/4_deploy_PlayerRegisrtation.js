@@ -4,10 +4,6 @@ const GameItems = artifacts.require("GameItems");
 const PlayerRegistration = artifacts.require("PlayerRegistration");
 
 module.exports = async function (deployer, network, accounts) {
-    const initialOwner = accounts[0];
-    const initialOwnerSupply = 1000000;  // Adjust as needed
-    const initialContractSupply = 500000; // Adjust as needed
-
     // Deploy GoldCoin with correct constructor parameters
     await deployer.deploy(GoldCoin, initialOwner, initialOwnerSupply, initialContractSupply);
     const goldCoinInstance = await GoldCoin.deployed();

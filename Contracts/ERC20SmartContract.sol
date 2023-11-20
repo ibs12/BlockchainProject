@@ -6,6 +6,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract GoldCoin is ERC20, Ownable {
     // Define events
+    uint256 initialOwnerSupply = 1000000;  // Adjust as needed
+    uint256 initialContractSupply = 500000; // Adjust as needed
     event Mint(address indexed to, uint256 amount);
     event GoldCoinPurchase(
         address indexed buyer,
@@ -16,10 +18,8 @@ contract GoldCoin is ERC20, Ownable {
     event Withdrawal(address indexed owner, uint256 amount);
 
     constructor(
-        address initialOwner,
-        uint256 initialOwnerSupply,
-        uint256 initialContractSupply
     ) ERC20("GoldCoin", "GC") {
+        address initialOwner = msg.sender;
         // Mint initial supply to the owner and the contract
         _mint(initialOwner, initialOwnerSupply * 10 ** 18);
         _mint(address(this), initialContractSupply * 10 ** 18);
@@ -50,7 +50,7 @@ contract GoldCoin is ERC20, Ownable {
         );
 
         _transfer(address(this), msg.sender, goldCoinsPerPurchase);
-
+        payable(owner()).transfer(msg.value);
         emit GoldCoinPurchase(msg.sender, msg.value, goldCoinsPerPurchase);
     }
 
