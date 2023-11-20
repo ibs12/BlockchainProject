@@ -5,8 +5,6 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract GoldCoin is ERC20, Ownable {
-    uint256 public rate = 1000; // Number of GoldCoins per Ether
-
     // Define events
     event Mint(address indexed to, uint256 amount);
     event GoldCoinPurchase(
@@ -36,27 +34,24 @@ contract GoldCoin is ERC20, Ownable {
         emit Mint(to, amount);
     }
 
-    function buyGoldCoins(address player) public payable {
-        uint256 weiAmount = msg.value;
-        // Assuming the token has 18 decimals, like Ether
-        // This will give the buyer 1000 GoldCoins for each wei sent
-        uint256 tokensToBuy = weiAmount * (rate * 10 ** decimals());
+    function buyGoldCoins() public payable {
+        uint256 etherPrice = 0.00001 ether; // Fixed price for buying GoldCoins
+        uint256 goldCoinsPerPurchase = 1000 * 10 ** decimals(); // Fixed amount of GoldCoins per purchase
+
+        require(
+            msg.value == etherPrice,
+            "Send exactly 0.00001 Ether to purchase GoldCoins."
+        );
 
         uint256 dexBalance = balanceOf(address(this));
-        require(tokensToBuy > 0, "You need to send some Ether");
         require(
-            tokensToBuy <= dexBalance,
+            goldCoinsPerPurchase <= dexBalance,
             "Not enough GoldCoins in the reserve"
         );
-        _transfer(address(this), player, tokensToBuy);
 
-        emit GoldCoinPurchase(player, weiAmount, tokensToBuy);
-    }
+        _transfer(address(this), msg.sender, goldCoinsPerPurchase);
 
-    // Function to set the exchange rate, only callable by the owner
-    function setRate(uint256 newRate) public onlyOwner {
-        rate = newRate;
-        emit RateChange(newRate);
+        emit GoldCoinPurchase(msg.sender, msg.value, goldCoinsPerPurchase);
     }
 
     // Function to withdraw Ether from the contract, only callable by the owner
