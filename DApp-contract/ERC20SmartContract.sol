@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract GoldCoin is ERC20, Ownable {
+contract GoldCoin is ERC20 {
     // Define events
     uint256 initialOwnerSupply = 1000000; // Adjust as needed
     uint256 initialContractSupply = 500000; // Adjust as needed
@@ -28,19 +28,14 @@ contract GoldCoin is ERC20, Ownable {
         emit Mint(address(this), initialContractSupply);
     }
 
-    function mint(address to, uint256 amount) public onlyOwner {
+    function mint(address to, uint256 amount) public {
         _mint(to, amount);
         emit Mint(to, amount);
     }
 
-    function buyGoldCoins() external payable {
+    function buyGoldCoins(address player) external payable {
         uint256 price = 0.1 ether; // Fixed price for buying 1000 GoldCoins
         uint256 goldCoinsPerPurchase = 1000 * 10 ** decimals(); // Fixed amount of GoldCoins per purchase
-
-        require(
-            msg.value == price,
-            "Send exactly 0.00001 Ether to purchase 1000 GoldCoins."
-        );
 
         uint256 dexBalance = balanceOf(address(this));
         require(
@@ -48,15 +43,15 @@ contract GoldCoin is ERC20, Ownable {
             "Not enough GoldCoins in the reserve"
         );
 
-        _transfer(address(this), msg.sender, goldCoinsPerPurchase);
+        _transfer(address(this), player, goldCoinsPerPurchase);
 
-        emit GoldCoinPurchase(msg.sender, msg.value, goldCoinsPerPurchase);
+        emit GoldCoinPurchase(player, msg.value, goldCoinsPerPurchase);
     }
 
     // Function to withdraw Ether from the contract, only callable by the owner
-    function withdraw() public onlyOwner {
-        uint256 balance = address(this).balance;
-        payable(owner()).transfer(balance);
-        emit Withdrawal(owner(), balance);
-    }
+    // function withdraw() public {
+    //     uint256 balance = address(this).balance;
+    //     payable(owner()).transfer(balance);
+    //     emit Withdrawal(owner(), balance);
+    // }
 }

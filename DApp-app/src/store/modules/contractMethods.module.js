@@ -4,28 +4,28 @@ const state = {
   starterCards: [
     {
       title: "Start card 1",
-      attack: 100,
-      defense: 200
+      attack: 12,
+      defense: 29
     },
     {
       title: "Start card 2",
-      attack: 101,
-      defense: 201
+      attack: 76,
+      defense: 41
     },
     {
       title: "Start card 3",
-      attack: 102,
-      defense: 202
+      attack: 6,
+      defense: 82
     },
     {
       title: "Start card 4",
-      attack: 103,
-      defense: 203
+      attack: 13,
+      defense: 38
     },
     {
       title: "Start card 5",
-      attack: 104,
-      defense: 204
+      attack: 92,
+      defense: 54
     },
   ]
 };

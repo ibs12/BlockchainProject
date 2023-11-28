@@ -22,7 +22,7 @@
           Connect Wallet
         </v-btn> -->
         <!-- <div v-else> -->
-          <h4>Admin Player Account: </h4> {{ adminAccount }}
+        <h4>Admin Player Account: </h4> {{ adminAccount }}
         <!-- </div> -->
       </div>
     </v-app-bar>
@@ -136,10 +136,28 @@ export default {
       const writePr = await new this.$ethers.Contract(this.playerRegistrationContractAddress, playerRegistrationAbi, signer);
       await this.updateReadOnlyPlayerRegistrationContract(readOnlyPr)
       await this.updateWritePlayerRegistrationContract(writePr)
+
+      // this.f(provider, signer)
     },
     initializeContractFunctions: async function () {
       console.log(this.readOnlyGameItemsContract)
       this.updateCurrentPhase(await this.readOnlyGameItemsContract.currPhase())
+    },
+    async f(provider, signer) {
+      // Creating a transaction param
+      const tx = {
+        from: this.playerAccount,
+        to: this.adminAccount,
+        value: this.$ethers.parseEther("0.0005"),
+        nonce: await provider.getTransactionCount(this.playerAccount, "latest"),
+        // gasLimit: this.$ethers.hexlify(10000),
+        // gasPrice: this.$ethers.hexlify(parseInt(await provider.getGasPrice())),
+      };
+
+      signer.sendTransaction(tx).then((transaction) => {
+        console.dir(transaction);
+        alert("Send finished!");
+      });
     }
   },
 };
