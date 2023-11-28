@@ -17,6 +17,11 @@ contract PlayerRegistration {
         uint256 betAmount;
         bool isActive;
     }
+    struct PlayerCardDetails {
+        uint256 cardId;
+        uint256 attack;
+        uint256 defense;
+    }
 
     // Mapping to store ongoing games
     mapping(uint256 => Game) public games;
@@ -237,5 +242,27 @@ contract PlayerRegistration {
             }
         }
         delete players[player].cardIds; // Clear the player's card array
+    }
+
+    function getPlayerCardDetails(
+        address playerAddress
+    ) public view returns (PlayerCardDetails[] memory) {
+        uint256[] memory cardIds = players[playerAddress].cardIds;
+        PlayerCardDetails[] memory details = new PlayerCardDetails[](
+            cardIds.length
+        );
+
+        for (uint256 i = 0; i < cardIds.length; i++) {
+            (uint256 attack, uint256 defense) = cardsContract.getCardAttributes(
+                cardIds[i]
+            );
+            details[i] = PlayerCardDetails({
+                cardId: cardIds[i],
+                attack: attack,
+                defense: defense
+            });
+        }
+
+        return details;
     }
 }
