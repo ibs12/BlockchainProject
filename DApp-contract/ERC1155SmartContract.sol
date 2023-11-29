@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts@4.0.0/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts@4.0.0/utils/Counters.sol";
+import "@openzeppelin/contracts@4.0.0/access/Ownable.sol";
 import "./ERC20SmartContract.sol"; // Importing the local ERC20 contract.
 import "./ERC721SmartContract.sol"; // Importing the local ERC721 contract.
 
@@ -114,9 +114,10 @@ contract GameItems is ERC1155, Ownable {
         uint256 price;
 
         if (items[itemId].itemType == ItemType.PowerUp) {
-            price = 1 * 1e18;
+            price = 1 * 1e18; // Adjust the price as necessary
+            playerPowerUps[msg.sender] += 1; // Increment the player's power-up count
         } else if (items[itemId].itemType == ItemType.Mod) {
-            price = 2 * 1e18;
+            price = 2 * 1e18; // Adjust the price as necessary
         }
 
         require(msg.value >= price, "Insufficient ETH sent.");
@@ -126,8 +127,13 @@ contract GameItems is ERC1155, Ownable {
     }
 
     function purchaseWithGoldCoin(uint256 itemId) external {
-        uint256 price = 30; // Example price for items
+        uint256 price = 30 * 10 ** 18; // Adjust the price as necessary
         erc20Token.transferFrom(msg.sender, address(this), price);
+
+        if (items[itemId].itemType == ItemType.PowerUp) {
+            playerPowerUps[msg.sender] += 1; // Increment the player's power-up count
+        }
+
         _mint(msg.sender, itemId, 1, "");
         emit ItemPurchased(msg.sender, itemId, 1, "GoldCoin");
     }

@@ -5,6 +5,9 @@ import "./ERC20SmartContract.sol";
 import "./ERC721SmartContract.sol";
 import "./ERC1155SmartContract.sol";
 
+// 0.1 eth = 100000000000000000 wei
+// 30 coins  = 30000000000000000000 in smallest unit of goldcoin
+// 100 coins  = 100000000000000000000 in smallest unit of goldcoin
 contract PlayerRegistration {
     GoldCoin private goldCoinContract;
     UniqueCards private cardsContract;
@@ -55,17 +58,18 @@ contract PlayerRegistration {
     );
     event GameEnded(uint256 gameId, address winner);
 
-    function pseudoRandom() private view returns (uint) {
+    function pseudoRandom(uint256 seed) private view returns (uint) {
         return
-            (uint(
+            uint(
                 keccak256(
                     abi.encodePacked(
                         block.timestamp,
                         block.prevrandao,
-                        msg.sender
+                        msg.sender,
+                        seed
                     )
                 )
-            ) % 15) + 1;
+            ) % 100;
     }
 
     struct Player {
@@ -87,8 +91,8 @@ contract PlayerRegistration {
 
             // Assign 5 unique cards to the player
             for (uint256 i = 0; i < 5; i++) {
-                uint256 attack = pseudoRandom();
-                uint256 defense = pseudoRandom();
+                uint256 attack = pseudoRandom(i);
+                uint256 defense = pseudoRandom(i + 1000); // Offset by 1000 to ensure a different number
                 uint256 newCardId = cardsContract.createUniqueCard(
                     "Starter Card",
                     "This is a starter card for new players",
@@ -193,7 +197,7 @@ contract PlayerRegistration {
 
         // Apply attack logic
         if (defenderDefense > attackerAttack) {
-            uint256 newDefense = defenderDefense - attackerAttack;
+            uint256 newDefense = ((defenderDefense - attackerAttack) - 1);
             cardsContract.updateCardDefense(defenderCardId, newDefense);
         } else {
             // Card is defeated, mark it as inactive
@@ -248,19 +252,32 @@ contract PlayerRegistration {
         address playerAddress
     ) public view returns (PlayerCardDetails[] memory) {
         uint256[] memory cardIds = players[playerAddress].cardIds;
-        PlayerCardDetails[] memory details = new PlayerCardDetails[](
-            cardIds.length
-        );
+        uint256 activeCardCount = 0;
 
+        // Count active cards
         for (uint256 i = 0; i < cardIds.length; i++) {
-            (uint256 attack, uint256 defense) = cardsContract.getCardAttributes(
-                cardIds[i]
-            );
-            details[i] = PlayerCardDetails({
-                cardId: cardIds[i],
-                attack: attack,
-                defense: defense
-            });
+            if (activeCards[cardIds[i]]) {
+                activeCardCount++;
+            }
+        }
+
+        PlayerCardDetails[] memory details = new PlayerCardDetails[](
+            activeCardCount
+        );
+        uint256 detailIndex = 0;
+
+        // Add details of active cards
+        for (uint256 i = 0; i < cardIds.length; i++) {
+            if (activeCards[cardIds[i]]) {
+                (uint256 attack, uint256 defense) = cardsContract
+                    .getCardAttributes(cardIds[i]);
+                details[detailIndex] = PlayerCardDetails({
+                    cardId: cardIds[i],
+                    attack: attack,
+                    defense: defense
+                });
+                detailIndex++;
+            }
         }
 
         return details;

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts@4.0.0/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts@4.0.0/access/Ownable.sol";
+import "@openzeppelin/contracts@4.0.0/utils/Counters.sol";
 
 contract UniqueCards is ERC721Enumerable, Ownable {
     address private PlayerRegistration;
@@ -100,13 +100,12 @@ contract UniqueCards is ERC721Enumerable, Ownable {
     }
 
     function updateCardDefense(uint256 cardId, uint256 newDefense) external {
-        require(msg.sender == address(PlayerRegistration), "Unauthorized"); // Only allow PlayerRegistration contract to call this
+        //require(msg.sender == address(PlayerRegistration), "Unauthorized"); // Only allow PlayerRegistration contract to call this
         cards[cardId].defense = newDefense;
         emit CardDefenseUpdate(cardId, newDefense);
     }
 
     function burnCard(uint256 cardId) external {
-        require(msg.sender == address(PlayerRegistration), "Unauthorized");
         require(ownerOf(cardId) != address(0), "Card does not exist");
         _burn(cardId);
         emit CardBurned(cardId);
