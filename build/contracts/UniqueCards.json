@@ -27919,12 +27919,12 @@
         }
       },
       "links": {},
-      "address": "0xfCda2BF3D46E45374Cc53dd14B67f7d1Fa735D2D",
-      "transactionHash": "0xab57691e4a9b64bbf42081d6742434900cbdcf97f43bdb1ecd52e35bfd5fb5ea"
+      "address": "0x961BcBBC3200A024c1Fa89475305b4F34C1E574e",
+      "transactionHash": "0xdc9f47253a6ea690e2d50eeca1d273e5556e7411ef4457a729ab34d5cb46790f"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2023-12-01T18:40:14.713Z",
+  "updatedAt": "2023-12-01T20:24:26.838Z",
   "networkType": "ethereum",
   "devdoc": {
     "events": {
