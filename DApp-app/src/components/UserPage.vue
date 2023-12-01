@@ -75,7 +75,7 @@
           <span class="font-weight-bold">The game has ended! Your cards have been burnt. You will
             receive new cards in the next game. Please come back in the next registration phase.</span>
         </p>
-        <p  class="font-weight-bold py-6 px-8" >
+        <p class="font-weight-bold py-6 px-8">
           Thank you for playing.
         </p>
       </v-card>
@@ -86,6 +86,7 @@
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
 import StarterCard from '../components/StarterCard.vue'
+import Web3 from 'web3';
 
 export default {
   name: 'UserPage',
@@ -130,10 +131,11 @@ export default {
     purchases: 0,
     powerUps: 0,
     mods: 0,
-    coins: 0
+    coins: 0,
+    web3Provider: null,
   }),
   computed: {
-    ...mapState('contract', ['adminAccount', 'playerAccount', 'goldCoinContractAddress', 'gameItemsContractAddress', 'uniqueCardsContractAddress', 'playerRegistrationContractAddress', 'readOnlyGoldCoinContract', 'readOnlyGameItemsContract', 'readOnlyUniqueCardsContract', 'readOnlyPlayerRegistrationContract', 'writeGoldCoinContract', 'writeGameItemsContract', 'writeUniqueCardsContract', 'writePlayerRegistrationContract']),
+    ...mapState('contract', ['adminAccount', 'playerAccount', 'goldCoinContractAddress', 'gameItemsContractAddress', 'uniqueCardsContractAddress', 'playerRegistrationContractAddress', 'readOnlyGoldCoinContract', 'readOnlyGameItemsContract', 'readOnlyUniqueCardsContract', 'readOnlyPlayerRegistrationContract', 'writeGoldCoinContract', 'writeGameItemsContract', 'writeUniqueCardsContract', 'writePlayerRegistrationContract']),//, 'web3Provider', 'web3']),
     ...mapState('contractMethods', ['currentPhase', 'playerRegistered']),
     ...mapGetters('contractMethods', ['getCurrentPhase', 'getPlayerRegistered']),
 
@@ -146,9 +148,21 @@ export default {
       c.defense = Math.floor(Math.random() * 100) + 1;
     }
     console.log(this.starterCards)
+    // Is there is an injected web3 instance?
+    if (typeof web3 !== 'undefined') {
+      // this.updateWeb3Provider(web3.currentProvider)
+      this.web3Provider = web3.currentProvider;
+    } else {
+      // If no injected web3 instance is detected, fallback to the TestRPC
+      // this.updateWeb3Provider(new Web3.providers.HttpProvider(App.url))
+
+      this.web3Provider = new Web3.providers.HttpProvider(App.url);
+    }
+    web3 = new Web3(this.web3Provider);
+    ethereum.enable();
   },
   methods: {
-    ...mapActions('contract', ['updateAdminAccount', 'updatePlayerAccount', 'updateGoldCoinContractAddress', 'updateGameItemsContractAddress', 'updateUniqueCardsContractAddress', 'updatePlayerRegistrationContractAddress', 'updateReadOnlyGoldCoinContract', 'updateReadOnlyGameItemsContract', 'updateReadOnlyUniqueCardsContract', 'updateReadOnlyPlayerRegistrationContract', 'updateWriteGoldCoinContract', 'updateWriteGameItemsContract', 'updateWriteUniqueCardsContract', 'updateWritePlayerRegistrationContract']),
+    ...mapActions('contract', ['updateAdminAccount', 'updatePlayerAccount', 'updateGoldCoinContractAddress', 'updateGameItemsContractAddress', 'updateUniqueCardsContractAddress', 'updatePlayerRegistrationContractAddress', 'updateReadOnlyGoldCoinContract', 'updateReadOnlyGameItemsContract', 'updateReadOnlyUniqueCardsContract', 'updateReadOnlyPlayerRegistrationContract', 'updateWriteGoldCoinContract', 'updateWriteGameItemsContract', 'updateWriteUniqueCardsContract', 'updateWritePlayerRegistrationContract']),//, 'updateWeb3Provider', 'updateWeb3']),
     ...mapActions('contractMethods', ['updateCurrentPhase', 'updatePlayerRegistered']),
     async registerUser() {
       try {
@@ -162,16 +176,26 @@ export default {
     async purchaseGoldCoins() {
       try {
         if (this.bagsOfCoins == '') return;
-        this.purchases += +this.bagsOfCoins;
-        this.bagsOfCoins = ''
-        this.coins = this.purchases * 1000;
-        const u = '0x5F45Aa4c39E0FfCAE17548C11cB9066b4478Bb22'
+
         console.log(await this.writeGoldCoinContract.buyGoldCoins(this.playerAccount, {
           value: 1,
           from: this.adminAccount,
         }))
+
+        web3 = new Web3(this.web3Provider);
+        await web3.eth.sendTransaction({
+          from: this.playerAccount,
+          to: this.goldCoinContractAddress,
+          value: 10000000
+        })
+          .then(function (receipt) {
+            console.log(receipt)
+          })
+
+        this.purchases += +this.bagsOfCoins;
+        this.bagsOfCoins = ''
+        this.coins = this.purchases * 1000;
         console.log(await this.readOnlyGoldCoinContract.balanceOf(this.playerAccount))
-        console.log()
       } catch (e) {
         console.error(e)
       }
@@ -180,6 +204,16 @@ export default {
       const name = 'power up ' + this.powerUps
       const description = 'this is a power up ' + this.powerUps
       await this.writeGameItemsContract.createItem(0, name, description)
+
+      web3 = new Web3(this.web3Provider);
+      await web3.eth.sendTransaction({
+        from: this.playerAccount,
+        to: this.goldCoinContractAddress,
+        value: 10000000
+      })
+        .then(function (receipt) {
+          console.log(receipt)
+        })
       this.powerUps += 1
       this.coins -= 200
       for (let c of this.starterCards) {
@@ -189,7 +223,17 @@ export default {
     async purchaseMod() {
       const name = 'mod ' + this.mods
       const description = 'this is a mod ' + this.mods
-      await this.writeGameItemsContract.createItem(0, name, description)
+      await this.writeGameItemsContract.createItem(1, name, description)
+
+      web3 = new Web3(this.web3Provider);
+      await web3.eth.sendTransaction({
+        from: this.playerAccount,
+        to: this.goldCoinContractAddress,
+        value: 10000000
+      })
+        .then(function (receipt) {
+          console.log(receipt)
+        })
       this.mods += 1
       this.coins -= 400
       for (let c of this.starterCards) {

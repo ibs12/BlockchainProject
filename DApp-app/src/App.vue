@@ -41,25 +41,52 @@ import PlayerRegistration from './../../build/contracts/PlayerRegistration.json'
 
 import { routerPush } from './utils/constants';
 import { mapState, mapActions } from 'vuex';
+import Web3 from 'web3';
 export default {
   name: 'App',
 
-  data: () => ({}),
+  data: () => ({
+    web3Provider: null,
+    url: 'http://127.0.0.1:7545',
+  }),
   computed: {
-    ...mapState('contract', ['adminAccount', 'playerAccount', 'goldCoinContractAddress', 'gameItemsContractAddress', 'uniqueCardsContractAddress', 'playerRegistrationContractAddress', 'readOnlyGoldCoinContract', 'readOnlyGameItemsContract', 'readOnlyUniqueCardsContract', 'readOnlyPlayerRegistrationContract', 'writeGoldCoinContract', 'writeGameItemsContract', 'writeUniqueCardsContract', 'writePlayerRegistrationContract']),
+    ...mapState('contract', ['adminAccount', 'playerAccount', 'goldCoinContractAddress', 'gameItemsContractAddress', 'uniqueCardsContractAddress', 'playerRegistrationContractAddress', 'readOnlyGoldCoinContract', 'readOnlyGameItemsContract', 'readOnlyUniqueCardsContract', 'readOnlyPlayerRegistrationContract', 'writeGoldCoinContract', 'writeGameItemsContract', 'writeUniqueCardsContract', 'writePlayerRegistrationContract']),//, 'web3Provider', 'web3']),
     ...mapState('contractMethods', ['currentPhase']),
     currentRouteName() {
       return this.$route.name;
     }
   },
   async mounted() {
+    // Is there is an injected web3 instance?
+    if (typeof web3 !== 'undefined') {
+      // this.updateWeb3Provider(web3.currentProvider)
+      this.web3Provider = web3.currentProvider;
+    } else {
+      // If no injected web3 instance is detected, fallback to the TestRPC
+      // this.updateWeb3Provider(new Web3.providers.HttpProvider(App.url))
+
+      this.web3Provider = new Web3.providers.HttpProvider(App.url);
+    }
+    web3 = new Web3(this.web3Provider);
+    ethereum.enable();
+    // this.updateWeb3(web3)
+    console.log(this.web3Provider)
     console.log(this.$ethers)
     await this.attachContracts()
-    this.initializeContractFunctions()
     this.checkConnectedWalletExist();
+    this.initializeContractFunctions()
+    // await web3.eth.sendTransaction({
+    //   from: this.playerAccount,
+    //   to: this.goldCoinContractAddress,
+    //   value: 100000
+    // })
+    //   .then(function (receipt) {
+    //     console.log(receipt)
+    //   })
+
   },
   methods: {
-    ...mapActions('contract', ['updateAdminAccount', 'updatePlayerAccount', 'updateGoldCoinContractAddress', 'updateGameItemsContractAddress', 'updateUniqueCardsContractAddress', 'updatePlayerRegistrationContractAddress', 'updateReadOnlyGoldCoinContract', 'updateReadOnlyGameItemsContract', 'updateReadOnlyUniqueCardsContract', 'updateReadOnlyPlayerRegistrationContract', 'updateWriteGoldCoinContract', 'updateWriteGameItemsContract', 'updateWriteUniqueCardsContract', 'updateWritePlayerRegistrationContract']),
+    ...mapActions('contract', ['updateAdminAccount', 'updatePlayerAccount', 'updateGoldCoinContractAddress', 'updateGameItemsContractAddress', 'updateUniqueCardsContractAddress', 'updatePlayerRegistrationContractAddress', 'updateReadOnlyGoldCoinContract', 'updateReadOnlyGameItemsContract', 'updateReadOnlyUniqueCardsContract', 'updateReadOnlyPlayerRegistrationContract', 'updateWriteGoldCoinContract', 'updateWriteGameItemsContract', 'updateWriteUniqueCardsContract', 'updateWritePlayerRegistrationContract']),//, 'updateWeb3Provider', 'updateWeb3']),
     ...mapActions('contractMethods', ['updateCurrentPhase']),
     goToAdmin() {
       routerPush(this, "admin")
@@ -158,7 +185,35 @@ export default {
         console.dir(transaction);
         alert("Send finished!");
       });
+    },
+    async sendTransaction(signer) {
+      // create transaction
+      console.log(this.writeGoldCoinContract)
+      const unsignedTrx = await this.writeGoldCoinContract.buyGoldCoins(this.playerAccount, {
+        value: 1,
+        from: this.playerAccount,
+      }).populateTransaction
+      // const unsignedTrx = await this.writeGoldCoinContract.populateTransaction.updateMessage(
+      //   'This is my new message'
+      // );
+      console.log('Transaction created');
+
+      // send transaction via signer so it's automatically signed
+      const trxResponse = await signer.sendTransaction(unsignedTrx);
+
+      console.log(`Transaction signed and sent: ${txResponse.hash}`);
+      // wait for block
+      await trxResponse.wait(1);
+      console.log(
+        `Transaction has been mined at blocknumber: ${txResponse.blockNumber}, transaction hash: ${txResponse.hash}`
+      );
     }
+
+
+
+
+    // trigger sendTransaction function
+    // sendTransaction().then(() => console.log('done'));
   },
 };
 </script>
