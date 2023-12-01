@@ -44,8 +44,9 @@
 // require('dotenv').config();
 // const { MNEMONIC, PROJECT_ID } = process.env;
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
-
+ const HDWalletProvider = require('@truffle/hdwallet-provider');
+ const infuraKey = "496578dd4d6448e29dfa47997137e848";
+// PRIVATE_KEY: febcea2171fea9b98638adcc497881210cc30d07b0a49762edcf6d691aac7296
 module.exports = {
   /**
    * Networks define how you connect to your ethereum client and let you set the
@@ -64,11 +65,18 @@ module.exports = {
     // tab if you use this network and you must also set the `host`, `port` and `network_id`
     // options below to some value.
     
-    development: {
-     host: "127.0.0.1",     // Localhost (default: none)
-     port: 7545,            // Standard Ethereum port (default: none)
-     network_id: "5777",       // Any network (default: none)
+    sepolia: {
+      provider: () => new HDWalletProvider(/*PRIVATE_KEY*/'febcea2171fea9b98638adcc497881210cc30d07b0a49762edcf6d691aac7296', `https://sepolia.infura.io/v3/${infuraKey}`),
+      network_id: 11155111, // Sepolia's network id
+      gas: 5500000,
     },
+
+
+    // development: {
+    //  host: "127.0.0.1",     // Localhost (default: none)
+    //  port: 7545,            // Standard Ethereum port (default: none)
+    //  network_id: "5777",       // Any network (default: none)
+    // },
     
     // An additional network, but with some advanced options…
     // advanced: {

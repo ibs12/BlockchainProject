@@ -20291,10 +20291,16 @@
       "links": {},
       "address": "0xb09ACAaE86395E78191dF4B1414b8DCc2B97DF98",
       "transactionHash": "0x43553c83c7492274ea73a8483a90c87b2f92a289d70ed7746383812512e1ed2e"
+    },
+    "11155111": {
+      "events": {},
+      "links": {},
+      "address": "0xe428e62c397fa98f6d81A184c09b8cA41993b3dA",
+      "transactionHash": "0x5477bdf61634841d6fa089236725020ded52e015bd87f24d770492583e49ba0b"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2023-11-20T04:14:44.981Z",
+  "updatedAt": "2023-12-01T18:40:14.734Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
