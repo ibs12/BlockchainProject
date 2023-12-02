@@ -86,7 +86,7 @@
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
 import StarterCard from '../components/StarterCard.vue'
-import Web3 from 'web3';
+import { Web3 } from 'web3';
 
 export default {
   name: 'UserPage',
@@ -133,6 +133,7 @@ export default {
     mods: 0,
     coins: 0,
     web3Provider: null,
+    url: 'https://sepolia.infura.io/v3/496578dd4d6448e29dfa47997137e848',
   }),
   computed: {
     ...mapState('contract', ['adminAccount', 'playerAccount', 'goldCoinContractAddress', 'gameItemsContractAddress', 'uniqueCardsContractAddress', 'playerRegistrationContractAddress', 'readOnlyGoldCoinContract', 'readOnlyGameItemsContract', 'readOnlyUniqueCardsContract', 'readOnlyPlayerRegistrationContract', 'writeGoldCoinContract', 'writeGameItemsContract', 'writeUniqueCardsContract', 'writePlayerRegistrationContract']),//, 'web3Provider', 'web3']),
@@ -141,22 +142,18 @@ export default {
 
   },
   mounted() {
-    console.log('user')
-    console.log(this.starterCards)
+    // console.log('user')
+    // console.log(this.starterCards)
     for (let c of this.starterCards) {
       c.attack = Math.floor(Math.random() * 100) + 1;
       c.defense = Math.floor(Math.random() * 100) + 1;
     }
-    console.log(this.starterCards)
     // Is there is an injected web3 instance?
     if (typeof web3 !== 'undefined') {
-      // this.updateWeb3Provider(web3.currentProvider)
       this.web3Provider = web3.currentProvider;
     } else {
       // If no injected web3 instance is detected, fallback to the TestRPC
-      // this.updateWeb3Provider(new Web3.providers.HttpProvider(App.url))
-
-      this.web3Provider = new Web3.providers.HttpProvider(App.url);
+      this.web3Provider = new Web3.providers.HttpProvider(this.url);
     }
     web3 = new Web3(this.web3Provider);
     ethereum.enable();
@@ -174,31 +171,53 @@ export default {
       }
     },
     async purchaseGoldCoins() {
-      try {
-        if (this.bagsOfCoins == '') return;
+      // try {
+      if (this.bagsOfCoins == '') return;
+      // console.log(this.adminAccount)
+      console.log(await this.writeGoldCoinContract.buyGoldCoins(this.playerAccount, {
+        value: this.$ethers.parseUnits("1", "wei"),
+        // from: this.adminAccount,
+      }))
+      console.log(1234)
+      const provider_Metamask = new this.$ethers.BrowserProvider(window.ethereum);
+      console.log(provider_Metamask)
+      const signer = new this.$ethers.Wallet('057c28b39f791e70fd77425c00750d6722bdb14749ead22ff11f6edde59e536c', provider_Metamask);
+      const nonce = this.$ethers.get_transaction_count(this.playerAccount)
+      // const signer = provider_Metamask.getSigner();
+      const tx = await signer.sendTransaction({
+        to: this.goldCoinContractAddress,
+        value: this.$ethers.parseEther('0.0001'),
+        // gasLimit: '21000',
+        nonce: nonce
+      });
+      console.log("tx", tx);
+      // web3 = new Web3(this.web3Provider);
+      // console.log(web3, this.playerAccount, this.goldCoinContractAddress)
+      // // try {
+      // await web3.eth.sendTransaction({
+      //   from: this.adminAccount,
+      //   to: this.goldCoinContractAddress,
+      //   value: this.$ethers.parseUnits("0.000001", "ether"),
+      // })
+      //   .then(function (receipt) {
+      //     console.log(receipt)
+      //   })
+      //   .catch(e => {
+      //     console.error(e)
+      //   }) 
 
-        console.log(await this.writeGoldCoinContract.buyGoldCoins(this.playerAccount, {
-          value: 1,
-          from: this.adminAccount,
-        }))
+      // }
+      // catch (e) {
+      //   console.log(e)
+      // }
 
-        web3 = new Web3(this.web3Provider);
-        await web3.eth.sendTransaction({
-          from: this.playerAccount,
-          to: this.goldCoinContractAddress,
-          value: 10000000
-        })
-          .then(function (receipt) {
-            console.log(receipt)
-          })
-
-        this.purchases += +this.bagsOfCoins;
-        this.bagsOfCoins = ''
-        this.coins = this.purchases * 1000;
-        console.log(await this.readOnlyGoldCoinContract.balanceOf(this.playerAccount))
-      } catch (e) {
-        console.error(e)
-      }
+      this.purchases += +this.bagsOfCoins;
+      this.bagsOfCoins = ''
+      this.coins = this.purchases * 1000;
+      console.log(await this.readOnlyGoldCoinContract.balanceOf(this.playerAccount))
+      // } catch (e) {
+      //   console.error(e)
+      // }
     },
     async purchasePowerUp() {
       const name = 'power up ' + this.powerUps

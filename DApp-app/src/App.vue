@@ -47,7 +47,7 @@ export default {
 
   data: () => ({
     web3Provider: null,
-    url: 'http://127.0.0.1:7545',
+    url: 'https://sepolia.infura.io/v3/496578dd4d6448e29dfa47997137e848',
   }),
   computed: {
     ...mapState('contract', ['adminAccount', 'playerAccount', 'goldCoinContractAddress', 'gameItemsContractAddress', 'uniqueCardsContractAddress', 'playerRegistrationContractAddress', 'readOnlyGoldCoinContract', 'readOnlyGameItemsContract', 'readOnlyUniqueCardsContract', 'readOnlyPlayerRegistrationContract', 'writeGoldCoinContract', 'writeGameItemsContract', 'writeUniqueCardsContract', 'writePlayerRegistrationContract']),//, 'web3Provider', 'web3']),
@@ -60,12 +60,13 @@ export default {
     // Is there is an injected web3 instance?
     if (typeof web3 !== 'undefined') {
       // this.updateWeb3Provider(web3.currentProvider)
+      console.log(1111)
       this.web3Provider = web3.currentProvider;
     } else {
       // If no injected web3 instance is detected, fallback to the TestRPC
       // this.updateWeb3Provider(new Web3.providers.HttpProvider(App.url))
-
-      this.web3Provider = new Web3.providers.HttpProvider(App.url);
+      console.log(2222)
+      this.web3Provider = new Web3.providers.HttpProvider(this.url);
     }
     web3 = new Web3(this.web3Provider);
     ethereum.enable();
@@ -73,8 +74,8 @@ export default {
     console.log(this.web3Provider)
     console.log(this.$ethers)
     await this.attachContracts()
-    this.checkConnectedWalletExist();
-    this.initializeContractFunctions()
+    await this.checkConnectedWalletExist();
+    await this.initializeContractFunctions()
     // await web3.eth.sendTransaction({
     //   from: this.playerAccount,
     //   to: this.goldCoinContractAddress,
@@ -135,11 +136,29 @@ export default {
       }
     },
     attachContracts: async function () {
-      const provider = new this.$ethers.JsonRpcProvider("http://127.0.0.1:7545");
-      const signer = await provider.getSigner()
+      console.log(this.url)
+      const network = 11155111
+      const provider = new this.$ethers.InfuraProvider(
+        network,
+        '496578dd4d6448e29dfa47997137e848'
+      );
+      // Creating a signing account from a private key
+      const signer = new this.$ethers.Wallet('febcea2171fea9b98638adcc497881210cc30d07b0a49762edcf6d691aac7296', provider);
+      // const provider = new this.$ethers.InfuraProvider(this.url);
+      // const signer = await provider.getSigner()
       // const network = await provider.getNetwork();
       // console.log(network);
 
+      // const tx = await signer.sendTransaction({
+      //   from: this.playerAccount,
+      //   value: this.$ethers.parseUnits("0.001", "ether"),
+      // });
+      // console.log("Mining transaction...");
+      // console.log(`https://${network}.etherscan.io/tx/${tx.hash}`);
+      // Waiting for the transaction to be mined
+      // const receipt = await tx.wait();
+      // // The transaction is now on chain!
+      // console.log(`Mined in block ${receipt.blockNumber}`);
       const goldCoinAbi = GoldCoin.abi;
       const readOnlyGc = await new this.$ethers.Contract(this.goldCoinContractAddress, goldCoinAbi, provider);
       const writeGc = await new this.$ethers.Contract(this.goldCoinContractAddress, goldCoinAbi, signer);
