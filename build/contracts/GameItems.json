@@ -39555,12 +39555,12 @@
         }
       },
       "links": {},
-      "address": "0x6EE81e108236277097704f789a04c1Ac88b7FB31",
-      "transactionHash": "0xd4f6644c99e4daec56e7136778e76a83214877845cd8988ef85397b3d5009c13"
+      "address": "0xdBeD6F67f4F97591D2B19CeC53e550C99709F182",
+      "transactionHash": "0x99efaf20b80fe728df8d4cf1e3c5aaad55f9c5e42de6f15d194a17396c192614"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2023-12-01T20:24:26.852Z",
+  "updatedAt": "2023-12-02T00:55:50.297Z",
   "networkType": "ethereum",
   "devdoc": {
     "events": {

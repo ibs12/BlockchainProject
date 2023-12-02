@@ -15379,12 +15379,12 @@
         }
       },
       "links": {},
-      "address": "0x886b35730E36AD4361CEE1696c3550852C7DaE6C",
-      "transactionHash": "0xf9016d5d441ed3a1bc43c0bfc281a32757221c7655b1262420a6defc46440499"
+      "address": "0xf4ffC42a1b7C44674eE69587a761e706AbD9e742",
+      "transactionHash": "0x935b5ad6692d6eb43d00d205f81066456f0ec22752c7fca024c102304ea06b6f"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2023-12-01T20:24:26.829Z",
+  "updatedAt": "2023-12-02T00:55:50.276Z",
   "networkType": "ethereum",
   "devdoc": {
     "events": {
