@@ -282,4 +282,6 @@ contract PlayerRegistration {
 
         return details;
     }
+
+    receive() external payable {}
 }

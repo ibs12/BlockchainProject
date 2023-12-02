@@ -171,4 +171,6 @@ contract GameItems is ERC1155, Ownable {
     function hasPowerUp(address player) external view returns (bool) {
         return playerPowerUps[player] > 0;
     }
+
+    receive() external payable {}
 }

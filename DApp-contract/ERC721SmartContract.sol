@@ -110,4 +110,6 @@ contract UniqueCards is ERC721Enumerable, Ownable {
         _burn(cardId);
         emit CardBurned(cardId);
     }
+
+    receive() external payable {}
 }

@@ -63,4 +63,6 @@ contract GoldCoin is ERC20, Ownable {
     function getUserBalance(address user) public view returns (uint256) {
         return (balanceOf(user) / (10 ** decimals()));
     }
+
+    receive() external payable {}
 }
