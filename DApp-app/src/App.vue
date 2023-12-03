@@ -53,21 +53,38 @@ export default {
   },
   async mounted() {
     // Is there is an injected web3 instance?
-    if (typeof web3 !== 'undefined') {
-      console.log(1111)
-      this.web3Provider = web3.currentProvider;
-    } else {
-      // If no injected web3 instance is detected, fallback to the TestRPC
-      console.log(2222)
-      this.web3Provider = new Web3.providers.HttpProvider(this.url);
-    }
-    web3 = new Web3(this.web3Provider);
-    ethereum.enable();
-    console.log(this.web3Provider)
-    console.log(this.$ethers)
-    await this.attachContracts()
-    await this.checkConnectedWalletExist();
-    await this.initializeContractFunctions()
+    try {
+      if (typeof web3 !== 'undefined') {
+        // this.updateWeb3Provider(web3.currentProvider)
+        this.web3Provider = web3.currentProvider;
+      } else {
+        // If no injected web3 instance is detected, fallback to the TestRPC
+        // this.updateWeb3Provider(new Web3.providers.HttpProvider(App.url))
+        
+        this.web3Provider = await new Web3.providers.HttpProvider(App.url);
+      }
+      web3 = await new Web3(this.web3Provider);
+      await ethereum.enable();
+      // this.updateWeb3(web3)
+      console.log(this.web3Provider)
+      console.log(this.$ethers)
+      await this.attachContracts()
+      await this.checkConnectedWalletExist();
+      await this.initializeContractFunctions()
+      
+          }
+          catch(e) {
+
+          }
+    // await web3.eth.sendTransaction({
+    //   from: this.playerAccount,
+    //   to: this.goldCoinContractAddress,
+    //   value: 100000
+    // })
+    //   .then(function (receipt) {
+    //     console.log(receipt)
+    //   })
+
   },
   methods: {
     ...mapActions('contract', ['updateAdminAccount', 'updatePlayerAccount', 'updateGoldCoinContractAddress', 'updateGameItemsContractAddress', 'updateUniqueCardsContractAddress', 'updatePlayerRegistrationContractAddress', 'updateReadOnlyGoldCoinContract', 'updateReadOnlyGameItemsContract', 'updateReadOnlyUniqueCardsContract', 'updateReadOnlyPlayerRegistrationContract', 'updateWriteGoldCoinContract', 'updateWriteGameItemsContract', 'updateWriteUniqueCardsContract', 'updateWritePlayerRegistrationContract']),//, 'updateWeb3Provider', 'updateWeb3']),

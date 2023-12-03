@@ -27,7 +27,9 @@ const state = {
       attack: 92,
       defense: 54
     },
-  ]
+  ],
+  powerUps: 0,
+  mods: 0
 };
 
 const mutations = {
@@ -36,6 +38,12 @@ const mutations = {
   },
   SET_PLAYER_REGISTERED(state, value) {
     state.playerRegistered = value;
+  },
+  SET_POWER_UPS(state, value) {
+    state.powerUps = value;
+  },
+  SET_MODS(state, value) {
+    state.mods = value;
   },
 };
 
@@ -54,6 +62,12 @@ const actions = {
   },
   updatePlayerRegistered({ commit }, payload) {
     commit("SET_PLAYER_REGISTERED", payload);
+  },
+  updatePowerUps({ commit }, payload) {
+    commit("SET_POWER_UPS", payload);
+  },
+  updateMods({ commit }, payload) {
+    commit("SET_MODS", payload);
   },
 };
 

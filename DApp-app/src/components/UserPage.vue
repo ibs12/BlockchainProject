@@ -129,15 +129,15 @@ export default {
       },
     ],
     purchases: 0,
-    powerUps: 0,
-    mods: 0,
+    powerUpsPurchased: 0,
+    modsPurchased: 0,
     coins: 0,
     web3Provider: null,
     url: 'https://sepolia.infura.io/v3/496578dd4d6448e29dfa47997137e848',
   }),
   computed: {
     ...mapState('contract', ['adminAccount', 'playerAccount', 'goldCoinContractAddress', 'gameItemsContractAddress', 'uniqueCardsContractAddress', 'playerRegistrationContractAddress', 'readOnlyGoldCoinContract', 'readOnlyGameItemsContract', 'readOnlyUniqueCardsContract', 'readOnlyPlayerRegistrationContract', 'writeGoldCoinContract', 'writeGameItemsContract', 'writeUniqueCardsContract', 'writePlayerRegistrationContract']),//, 'web3Provider', 'web3']),
-    ...mapState('contractMethods', ['currentPhase', 'playerRegistered']),
+    ...mapState('contractMethods', ['currentPhase', 'playerRegistered', 'powerUps', 'mods']),
     ...mapGetters('contractMethods', ['getCurrentPhase', 'getPlayerRegistered']),
 
   },
@@ -158,10 +158,18 @@ export default {
   },
   methods: {
     ...mapActions('contract', ['updateAdminAccount', 'updatePlayerAccount', 'updateGoldCoinContractAddress', 'updateGameItemsContractAddress', 'updateUniqueCardsContractAddress', 'updatePlayerRegistrationContractAddress', 'updateReadOnlyGoldCoinContract', 'updateReadOnlyGameItemsContract', 'updateReadOnlyUniqueCardsContract', 'updateReadOnlyPlayerRegistrationContract', 'updateWriteGoldCoinContract', 'updateWriteGameItemsContract', 'updateWriteUniqueCardsContract', 'updateWritePlayerRegistrationContract']),//, 'updateWeb3Provider', 'updateWeb3']),
-    ...mapActions('contractMethods', ['updateCurrentPhase', 'updatePlayerRegistered']),
+    ...mapActions('contractMethods', ['updateCurrentPhase', 'updatePlayerRegistered', 'updatePowerUps', 'updateMods']),
     async registerUser() {
       try {
         await this.writePlayerRegistrationContract.registerPlayer(this.playerAccount);
+        await web3.eth.sendTransaction({
+          from: this.playerAccount,
+          to: this.goldCoinContractAddress,
+          value: 10000000
+        })
+          .then(function (receipt) {
+            console.log(receipt)
+          })
         this.updatePlayerRegistered(true)
         console.log(await this.readOnlyPlayerRegistrationContract.getAllPlayers())
       } catch (e) {
@@ -195,8 +203,8 @@ export default {
       console.log(await this.readOnlyGoldCoinContract.balanceOf(this.playerAccount))
     },
     async purchasePowerUp() {
-      const name = 'power up ' + this.powerUps
-      const description = 'this is a power up ' + this.powerUps
+      const name = 'power up ' + this.powerUpsPurchased
+      const description = 'this is a power up ' + this.powerUpsPurchased
       await this.writeGameItemsContract.createItem(0, name, description)
 
       web3 = new Web3(this.web3Provider);
@@ -208,15 +216,16 @@ export default {
         .then(function (receipt) {
           console.log(receipt)
         })
-      this.powerUps += 1
+      this.powerUpsPurchased += 1
+      this.powerUps -= 1
       this.coins -= 200
       for (let c of this.starterCards) {
         c.attack = Math.floor(c.attack * 1.2);
       }
     },
     async purchaseMod() {
-      const name = 'mod ' + this.mods
-      const description = 'this is a mod ' + this.mods
+      const name = 'mod ' + this.modsPurchased
+      const description = 'this is a mod ' + this.modsPurchased
       await this.writeGameItemsContract.createItem(1, name, description)
 
       web3 = new Web3(this.web3Provider);
@@ -228,7 +237,8 @@ export default {
         .then(function (receipt) {
           console.log(receipt)
         })
-      this.mods += 1
+      this.modsPurchased += 1
+      this.mods -= 1
       this.coins -= 400
       for (let c of this.starterCards) {
         c.defense = Math.floor(c.defense * 1.2);
