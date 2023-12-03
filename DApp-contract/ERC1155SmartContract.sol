@@ -215,25 +215,26 @@ contract GameItems is ERC1155, Ownable {
 
     function getWalletBalance(
         address user
-    ) public view returns (uint256[] memory, uint256, uint256[] memory) {
-        // ERC1155 Balances
-        uint256[] memory erc1155Balances = new uint256[](_itemIds.current());
-        for (uint256 i = 0; i <= _itemIds.current(); i++) {
-            erc1155Balances[i] = balanceOf(user, i);
-        }
+    )
+        public
+        view
+        returns (
+            uint256 powerUpBalance,
+            uint256 modPowerUpBalance,
+            uint256 erc20Balance,
+            uint256[] memory erc721Balances
+        )
+    {
+        powerUpBalance = balanceOf(user, 0);
+        modPowerUpBalance = balanceOf(user, 1);
 
-        // ERC20 Balance
-        uint256 erc20Balance = erc20Token.balanceOf(user);
+        erc20Balance = erc20Token.balanceOf(user);
 
-        // ERC721 Balances
-        uint256[] memory erc721Balances = new uint256[](
-            erc721Token.balanceOf(user)
-        );
-        for (uint256 i = 0; i < erc721Token.balanceOf(user); i++) {
+        uint256 erc721BalanceCount = erc721Token.balanceOf(user);
+        erc721Balances = new uint256[](erc721BalanceCount);
+        for (uint256 i = 0; i < erc721BalanceCount; i++) {
             erc721Balances[i] = erc721Token.tokenOfOwnerByIndex(user, i);
         }
-
-        return (erc1155Balances, erc20Balance, erc721Balances);
     }
 
     receive() external payable {}
