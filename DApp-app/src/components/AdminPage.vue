@@ -51,10 +51,8 @@ export default {
     },
     async createPowerUp() {
       await this.writeGameItemsContract.createItem(0, 'power up 0', 'this is a power up')
-      // console.log(await this.readOnlyGameItemsContract.items())
     },
     async endgame() {
-      // console.log(await this.readOnlyGameItemsContract.items())
     },
   },
 }
