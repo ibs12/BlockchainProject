@@ -154,10 +154,6 @@ contract GameItems is ERC1155, Ownable {
         emit ModPowerUpUsed(player, cardIds);
     }
 
-    function hasModPowerUp(address player) external view returns (bool) {
-        return playerModPowerUps[player] > 0;
-    }
-
     function usePowerUp(address player) external {
         require(playerPowerUps[player] > 0, "No power-ups available");
         playerPowerUps[player] -= 1;
@@ -169,10 +165,6 @@ contract GameItems is ERC1155, Ownable {
             cardIds[i] = cardId;
         }
         emit PowerUpUsed(player, cardIds);
-    }
-
-    function hasPowerUp(address player) external view returns (bool) {
-        return playerPowerUps[player] > 0;
     }
 
     function transferERC1155Token(
