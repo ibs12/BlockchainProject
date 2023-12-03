@@ -142,8 +142,6 @@ export default {
 
   },
   mounted() {
-    // console.log('user')
-    // console.log(this.starterCards)
     for (let c of this.starterCards) {
       c.attack = Math.floor(Math.random() * 100) + 1;
       c.defense = Math.floor(Math.random() * 100) + 1;
@@ -191,33 +189,10 @@ export default {
         nonce: nonce
       });
       console.log("tx", tx);
-      // web3 = new Web3(this.web3Provider);
-      // console.log(web3, this.playerAccount, this.goldCoinContractAddress)
-      // // try {
-      // await web3.eth.sendTransaction({
-      //   from: this.adminAccount,
-      //   to: this.goldCoinContractAddress,
-      //   value: this.$ethers.parseUnits("0.000001", "ether"),
-      // })
-      //   .then(function (receipt) {
-      //     console.log(receipt)
-      //   })
-      //   .catch(e => {
-      //     console.error(e)
-      //   }) 
-
-      // }
-      // catch (e) {
-      //   console.log(e)
-      // }
-
       this.purchases += +this.bagsOfCoins;
       this.bagsOfCoins = ''
       this.coins = this.purchases * 1000;
       console.log(await this.readOnlyGoldCoinContract.balanceOf(this.playerAccount))
-      // } catch (e) {
-      //   console.error(e)
-      // }
     },
     async purchasePowerUp() {
       const name = 'power up ' + this.powerUps
